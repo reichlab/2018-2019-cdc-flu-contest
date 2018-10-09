@@ -142,7 +142,7 @@ R_CallMethodDef callMethods[] =
 	{NULL,NULL, 0}
 };
 
-void R_init_cdcFlu20172018(DllInfo *dll)
+void R_init_cdcFlu20182019(DllInfo *dll)
 {
    R_registerRoutines(dll,NULL,callMethods,NULL,NULL);
 }

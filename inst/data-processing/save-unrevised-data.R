@@ -7,13 +7,13 @@ source("https://raw.githubusercontent.com/cmu-delphi/delphi-epidata/master/src/c
 # Fetch data
 all_regions <- c("nat", paste0("hhs", 1:10))
 all_issues <- expand.grid(
-    year = 2010:2017,
+    year = 2010:2018,
     week = sprintf("%02d", c(1:20, 40:53))
   ) %>%
   apply(1, function(x) paste(x, collapse = "")) %>%
   as.integer() %>%
   sort()
-all_issues <- all_issues[all_issues >= 201040 & all_issues <= 201720]
+all_issues <- all_issues[all_issues >= 201040 & all_issues <= 201830]
 
 all_obs <- lapply(all_regions,
   function(region_val) {
@@ -21,7 +21,7 @@ all_obs <- lapply(all_regions,
       function(issue_val) {
         obs_one_issue <- Epidata$fluview(
           regions = list(region_val),
-          epiweeks = list(Epidata$range(199740, 201740)),
+          epiweeks = list(Epidata$range(199740, 201840)),
           issue = list(issue_val))
 
         lapply(obs_one_issue$epidata,

@@ -14,25 +14,13 @@ library(MMWRweek)
 library(cdcfluview) ## devtools::install_github("hrbrmstr/cdcfluview")
 library(forcats)
 
-
-
 flu_data_raw <- ilinet(region="state",years=1997:2018)
 ## ggplot(flu_data, aes(x=YEAR+WEEK/53, y=`%UNWEIGHTED ILI`)) + geom_line() + facet_wrap(~REGION)
 
-flu_data <- transmute(flu_data_raw,
-    region.type = `REGION TYPE`,
-    region = REGION,
-    year = YEAR,
-    week = WEEK,
-    time = as.POSIXct(MMWRweek2Date(YEAR, WEEK)),
-    unweighted_ili = as.numeric(`%UNWEIGHTED ILI`),
-    ili_count = ILITOTAL,
-    patient_count = `TOTAL PATIENTS`,
-    provider_count = `NUM. OF PROVIDERS`
-)
+flu_data <- mutate(flu_data_raw, time = as.POSIXct(MMWRweek2Date(year, week)))
 
 ## set rows with denominator zeroes to NAs
-flu_data[which(flu_data$patient_count==0),"weighted_ili"] <- NA
+flu_data[which(flu_data$total_patients==0),"weighted_ili"] <- NA
 
 ## Add time_index column: the number of days since some origin date
 ## (1970-1-1 in this case).  The origin is arbitrary.
