@@ -14,13 +14,9 @@ library(MMWRweek)
 library(cdcfluview) ## devtools::install_github("hrbrmstr/cdcfluview")
 library(forcats)
 
-flu_data_raw <- get_flu_data(
-    region = "state",
-    sub_region = "all",
-    data_source = "ilinet",
-    years = 1997:2017
-)
 
+
+flu_data_raw <- ilinet(region="state",years=1997:2018)
 ## ggplot(flu_data, aes(x=YEAR+WEEK/53, y=`%UNWEIGHTED ILI`)) + geom_line() + facet_wrap(~REGION)
 
 flu_data <- transmute(flu_data_raw,
