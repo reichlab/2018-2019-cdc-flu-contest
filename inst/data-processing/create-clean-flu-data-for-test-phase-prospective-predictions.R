@@ -14,14 +14,9 @@ library(MMWRweek)
 library(cdcfluview)
 library(forcats)
 
-regionflu <- get_flu_data("hhs",
-  sub_region = 1:10,
-  data_source = "ilinet",
-  years = 1997:2017)
-usflu <- get_flu_data("national",
-  sub_region = NA,
-  data_source = "ilinet",
-  years = 1997:2017)
+regionflu <- ilinet(region="hhs", years= 1997:2018)
+
+usflu <- ilinet(region="national", years= 1997:2018)
 
 ## make AGE cols in usflu integer data type
 cols <- matches('^AGE', vars=colnames(usflu))
