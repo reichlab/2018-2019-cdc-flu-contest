@@ -1,4 +1,4 @@
-"","region.type","region","year","week","time","weighted_ili","time_index","season","season_week"
+"","region_type","region","year","week","time","weighted_ili","time_index","season","season_week"
 "1","HHS Regions","Region 1",1997,40,1997-09-27 20:00:00,0.498535,10131,"1997/1998",10
 "2","HHS Regions","Region 2",1997,40,1997-09-27 20:00:00,0.374963,10131,"1997/1998",10
 "3","HHS Regions","Region 3",1997,40,1997-09-27 20:00:00,1.35428,10131,"1997/1998",10
