@@ -12,4 +12,4 @@
 #' @format A data.frame with 220 observations of the seasonal baseline threshold used for 
 #' determining the "flu season onset" in each region of the US.
 #' @source \url{https://github.com/cdcepi/FluSight-forecasts/blob/master/wILI_Baseline.csv}
-"flu_onset_baselines"
+#"flu_onset_baselines"

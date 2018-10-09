@@ -1,11 +1,11 @@
-#'cdcFlu20172018 - Code and submissions for 2017-2018 CDC flu prediction contest
+#'cdcFlu20182019 - Code and submissions for 2018-2019 CDC flu prediction contest
 #'
-#'Code and submissions for 2017-2018 CDC flu prediction contest
+#'Code and submissions for 2018-2019 CDC flu prediction contest
 #'
 #'@author Evan Ray <elray@umass.edu>
 #'@docType package
-#'@name cdcFlu20172018
+#'@name cdcFlu20182019
 #'@importFrom Rcpp evalCpp
-#'@useDynLib cdcFlu20172018, .registration = TRUE
-#'@aliases cdcFlu20172018 cdcFlu20172018-package
+#'@useDynLib cdcFlu20182019, .registration = TRUE
+#'@aliases cdcFlu20182019 cdcFlu20182019-package
 NULL
