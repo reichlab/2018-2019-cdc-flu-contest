@@ -5,8 +5,9 @@
 \title{Get log scores and full predictive distributions for each prediction target}
 \usage{
 get_submission_via_trajectory_simulation(data, analysis_time_season,
-  first_analysis_time_season_week = 10, last_analysis_time_season_week = 41,
-  prediction_target_var, incidence_bins, incidence_bin_names, n_trajectory_sims,
+  first_analysis_time_season_week = 10,
+  last_analysis_time_season_week = 41, prediction_target_var,
+  incidence_bins, incidence_bin_names, n_trajectory_sims,
   simulate_trajectories_function, simulate_trajectories_params,
   all_regions = c("National", paste0("Region ", 1:10)))
 }

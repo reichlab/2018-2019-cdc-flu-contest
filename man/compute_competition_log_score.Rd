@@ -5,7 +5,8 @@
 \title{Calculate "log scores" for the purpose of the competition -- log[sum_i(p_i)] where p_i is the model's
 probability of bin i and i runs over some bins adjacent to the bin where the observed quantity was.}
 \usage{
-compute_competition_log_score(bin_log_probs, observed_bin, prediction_target)
+compute_competition_log_score(bin_log_probs, observed_bin,
+  prediction_target)
 }
 \arguments{
 \item{bin_log_probs}{named numeric vector with log probability of each bin;

@@ -4,9 +4,9 @@
 \alias{assemble_stacking_inputs}
 \title{Assemble a data frame of inputs to stacking}
 \usage{
-assemble_stacking_inputs(regions, seasons = paste0(2010:2016, "-", 2011:2017),
-  prediction_target, component_model_names, explanatory_variables,
-  include_model_performance = FALSE, preds_path)
+assemble_stacking_inputs(regions, seasons = paste0(2010:2016, "-",
+  2011:2017), prediction_target, component_model_names,
+  explanatory_variables, include_model_performance = FALSE, preds_path)
 }
 \arguments{
 \item{regions}{string with region: either "National" or in the format

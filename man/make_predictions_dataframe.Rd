@@ -5,7 +5,8 @@
 \title{Helper function to standardize creation of empty prediction dataset}
 \usage{
 make_predictions_dataframe(data, model_name, incidence_bin_names,
-  first_analysis_time_season_week = 10, last_analysis_time_season_week = 41)
+  first_analysis_time_season_week = 10,
+  last_analysis_time_season_week = 41)
 }
 \arguments{
 \item{data}{the data to be used}

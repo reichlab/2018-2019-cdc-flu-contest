@@ -4,7 +4,8 @@
 \alias{make_one_kde_prediction_file}
 \title{Wrapper for prediction of a single time-point from KDE fits}
 \usage{
-make_one_kde_prediction_file(fits_path, save_path, season, season_week, n_sim)
+make_one_kde_prediction_file(fits_path, save_path, season, season_week,
+  n_sim)
 }
 \arguments{
 \item{fits_path}{filepath to fitted models}

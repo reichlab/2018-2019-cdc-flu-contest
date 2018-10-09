@@ -5,7 +5,8 @@
 \title{Get log scores and full predictive distributions for each prediction target}
 \usage{
 get_submission_one_region_via_trajectory_simulation(data,
-  analysis_time_season = "2016/2017", first_analysis_time_season_week = 10,
+  analysis_time_season = "2016/2017",
+  first_analysis_time_season_week = 10,
   last_analysis_time_season_week = 41, region, prediction_target_var,
   incidence_bins, incidence_bin_names, n_trajectory_sims,
   simulate_trajectories_function, simulate_trajectories_params,

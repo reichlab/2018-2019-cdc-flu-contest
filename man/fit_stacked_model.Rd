@@ -9,12 +9,12 @@ and are obtained via gradient tree boosting}
 fit_stacked_model(prediction_target, component_model_names,
   explanatory_variables = c("analysis_time_season_week",
   "kcde_model_confidence", "sarima_model_confidence", "weighted_ili"),
-  loso_preds_path, seasons_to_leave_out, booster = "gbtree", subsample = 1,
-  colsample_bytree = 1, colsample_bylevel = 1, max_depth = 10,
-  min_child_weight = -10^10, eta = 0.3, gamma = 0, lambda = 0,
-  alpha = 0, nrounds = 10, cv_params = NULL, cv_folds = NULL,
-  cv_nfolds = 10L, cv_refit = "ttest", update = NULL, nthread = NULL,
-  verbose = 0)
+  loso_preds_path, seasons_to_leave_out, booster = "gbtree",
+  subsample = 1, colsample_bytree = 1, colsample_bylevel = 1,
+  max_depth = 10, min_child_weight = -10^10, eta = 0.3, gamma = 0,
+  lambda = 0, alpha = 0, nrounds = 10, cv_params = NULL,
+  cv_folds = NULL, cv_nfolds = 10L, cv_refit = "ttest",
+  update = NULL, nthread = NULL, verbose = 0)
 }
 \arguments{
 \item{prediction_target}{string with either "onset", "peak_week",

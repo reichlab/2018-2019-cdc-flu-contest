@@ -5,8 +5,9 @@
 \title{Estimate "optimal" unregularized weights for a linear combination of
 predictive models.}
 \usage{
-fit_unregularized_stacked_model(component_model_log_scores, method = "em",
-  tol = .Machine$double.eps, grid_size = 101, return_type = "optimal")
+fit_unregularized_stacked_model(component_model_log_scores,
+  method = "em", tol = .Machine$double.eps, grid_size = 101,
+  return_type = "optimal")
 }
 \arguments{
 \item{component_model_log_scores}{a data frame or matrix of log scores.

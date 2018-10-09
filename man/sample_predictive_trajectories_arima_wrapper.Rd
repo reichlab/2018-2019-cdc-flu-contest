@@ -6,8 +6,9 @@
 \code{simulate_trajectories_function} argument to
 \code{get_log_scores_via_trajectory_simulation}.}
 \usage{
-sample_predictive_trajectories_arima_wrapper(n_sims, max_prediction_horizon,
-  data, region, analysis_time_season, analysis_time_season_week, params)
+sample_predictive_trajectories_arima_wrapper(n_sims,
+  max_prediction_horizon, data, region, analysis_time_season,
+  analysis_time_season_week, params)
 }
 \arguments{
 \item{n_sims}{number of trajectories to simulate}

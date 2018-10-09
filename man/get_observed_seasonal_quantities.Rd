@@ -4,9 +4,9 @@
 \alias{get_observed_seasonal_quantities}
 \title{Compute season onset, peak week, and peak incidence}
 \usage{
-get_observed_seasonal_quantities(data, season, first_CDC_season_week = 10,
-  last_CDC_season_week = 42, onset_baseline, incidence_var, incidence_bins,
-  incidence_bin_names)
+get_observed_seasonal_quantities(data, season,
+  first_CDC_season_week = 10, last_CDC_season_week = 42,
+  onset_baseline, incidence_var, incidence_bins, incidence_bin_names)
 }
 \arguments{
 \item{data}{a data frame containing at minimum columns named season,

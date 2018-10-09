@@ -4,9 +4,9 @@
 \alias{sample_predictive_trajectories_arima}
 \title{Simulate predictive trajectories from an ARIMA model}
 \usage{
-sample_predictive_trajectories_arima(object, h = ifelse(object$arma[5] > 1, 2
-  * object$arma[5], 10), level = c(80, 95), fan = FALSE, xreg = NULL,
-  lambda = object$lambda, npaths = 5000, ...)
+sample_predictive_trajectories_arima(object, h = ifelse(object$arma[5] >
+  1, 2 * object$arma[5], 10), level = c(80, 95), fan = FALSE,
+  xreg = NULL, lambda = object$lambda, npaths = 5000, ...)
 }
 \arguments{
 \item{object}{an Arima fit object (with class "Arima")}

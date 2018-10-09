@@ -5,9 +5,10 @@
 \title{Get log scores and full predictive distributions for each prediction target}
 \usage{
 get_log_scores_via_direct_simulation(analysis_time_season,
-  first_analysis_time_season_week = 10, last_analysis_time_season_week = 41,
-  region, prediction_target_var, incidence_bins, incidence_bin_names, n_sims,
-  model_name, fits_path, prediction_save_path)
+  first_analysis_time_season_week = 10,
+  last_analysis_time_season_week = 41, region, prediction_target_var,
+  incidence_bins, incidence_bin_names, n_sims, model_name, fits_path,
+  prediction_save_path)
 }
 \arguments{
 \item{analysis_time_season}{character vector of length 1 specifying the
