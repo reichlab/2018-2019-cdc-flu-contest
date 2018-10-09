@@ -5,7 +5,8 @@
 \title{Estimate SARIMA model using data up to but not including first_test_season}
 \usage{
 fit_region_sarima(data, region, first_test_season, d = NA, D = NA,
-  seasonal_difference = TRUE, transformation = "none", path)
+  seasonal_difference = TRUE, transformation = c("none", "box-cox",
+  "log"), prediction_target_var = "weighted_ili", path)
 }
 \arguments{
 \item{data}{regional dataset with structure like regionflu-cleaned}
@@ -20,7 +21,10 @@ fit_region_sarima(data, region, first_test_season, d = NA, D = NA,
 to auto.arima?}
 
 \item{transformation}{character specifying transformation type:
-"box-cox", "log", or "none"}
+"box-cox", "log", or "none" (default is "none")}
+
+\item{prediction_target_var}{character specifying column name of modeled 
+variable, defaults to "weighted_ili"}
 
 \item{path}{path in which to save files}
 

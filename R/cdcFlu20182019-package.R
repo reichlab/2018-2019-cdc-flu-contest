@@ -2,7 +2,7 @@
 #'
 #'Code and submissions for 2018-2019 CDC flu prediction contest
 #'
-#'@author Evan Ray <elray@umass.edu>
+#'@author Evan Ray <eray@mtholyoke.edu>
 #'@docType package
 #'@name cdcFlu20182019
 #'@importFrom Rcpp evalCpp
