@@ -4,11 +4,6 @@
 #' @return data frame with latest flu data, preprocessed
 #' @export
 download_and_preprocess_flu_data <- function() {
-  ### The following lines can be used to manually fix issue with lack of https in get_flu_data, until the package is updated
-  # debug(get_flu_data)
-  # unlink(out_file)
-  # tmp <- POST("https://gis.cdc.gov/grasp/fluview/FluViewPhase2CustomDownload.ashx",
-  #   body = params, write_disk(out_file))
 
   regionflu <- get_flu_data("hhs", sub_region=1:10, data_source="ilinet", years=1997:2017)
   usflu <- get_flu_data("national", sub_region=NA, data_source="ilinet", years=1997:2017)
