@@ -13,14 +13,14 @@ library(MMWRweek)
 library(cdcfluview)
 library(forcats)
 
-regionflu <- get_flu_data("hhs",
-  sub_region = 1:10,
-  data_source = "ilinet",
-  years = 1997:2017)
-usflu <- get_flu_data("national",
-  sub_region = NA,
-  data_source = "ilinet",
-  years = 1997:2017)
+ # regionflu1 <- get_flu_data("hhs",
+ #   sub_region = 1:10,
+ #   data_source = "ilinet",
+ #   years = 1997:2018)
+
+regionflu <- ilinet(region="hhs", years= 1997:2018)
+
+usflu <- ilinet(region="national", years= 1997:2018)
 
 ## make AGE cols in usflu integer data type
 cols <- matches('^AGE', vars=colnames(usflu))
@@ -28,16 +28,17 @@ usflu[,cols] <- sapply(usflu[,cols], as.integer)
 cols <- matches('^AGE', vars=colnames(regionflu))
 regionflu[,cols] <- sapply(regionflu[,cols], as.integer)
 
+### something going on here
 flu_data <- bind_rows(regionflu, usflu)
 
 flu_data <- transmute(flu_data,
-  region.type = `REGION TYPE`,
-  region = fct_recode(REGION,
+  region.type = `region_type`,
+  region = fct_recode(region,
     National = "X"),
-  year = YEAR,
-  week = WEEK,
-  time = as.POSIXct(MMWRweek2Date(YEAR, WEEK)),
-  weighted_ili = as.numeric(`% WEIGHTED ILI`))
+  year = year,
+  week = week,
+  time = as.POSIXct(MMWRweek2Date(year, week)),
+  weighted_ili = as.numeric(`weighted_ili`))
 
 ## set zeroes to NAs
 flu_data[which(flu_data$weighted_ili==0),"weighted_ili"] <- NA
