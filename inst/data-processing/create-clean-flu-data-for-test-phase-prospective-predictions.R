@@ -29,7 +29,7 @@ flu_data <- bind_rows(regionflu, usflu)
 flu_data <- transmute(flu_data,
   release_date = NA,
   region = ifelse(REGION == "X", "nat", gsub("Region ", "hhs", REGION)),
-  issue = 201727,
+  issue = 201830,
   epiweek = as.integer(paste0(YEAR, sprintf("%02d", WEEK))),
   year = YEAR,
   season_week = WEEK,
