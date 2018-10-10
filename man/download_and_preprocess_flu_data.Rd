@@ -4,7 +4,12 @@
 \alias{download_and_preprocess_flu_data}
 \title{Download and preprocess the latest CDC flu data, both national and regional}
 \usage{
-download_and_preprocess_flu_data()
+
+  download_and_preprocess_flu_data(latest_year = as.numeric(format(Sys.Date(),
+  "\%Y")))
+}
+\arguments{
+\item{latest_year}{year through which data should be downloaded, defaults to current year}
 }
 \value{
 data frame with latest flu data, preprocessed
