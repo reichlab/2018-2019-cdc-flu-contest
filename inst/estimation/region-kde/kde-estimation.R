@@ -2,7 +2,7 @@
 ## 15 June 2017 - copied over from awes repository
 ## 
 
-library(cdcFlu20172018)
+library(cdcFlu20182019)
 library(rstream)
 library(MMWRweek)
 library(dplyr)

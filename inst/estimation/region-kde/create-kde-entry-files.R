@@ -2,7 +2,7 @@
 ## Nicholas Reich
 ## October 2017
 
-library(cdcFlu20172018)
+library(cdcFlu20182019)
 library(doMC)
 
 data(flu_data)

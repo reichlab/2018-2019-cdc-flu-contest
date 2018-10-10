@@ -3,7 +3,6 @@
 ## 7 October 2016
 ## 15 June 2017 - updated for cdcFlu20172018 package 
 
-
 ## General strategy
 
 ## ESTIMATION

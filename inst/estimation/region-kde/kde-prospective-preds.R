@@ -3,7 +3,7 @@
 ## Nicholas Reich
 ## July 2017
 
-library(cdcFlu20172018)
+library(cdcFlu20182019)
 library(doMC)
 
 n_sims <- 10000

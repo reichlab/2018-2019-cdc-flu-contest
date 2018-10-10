@@ -981,25 +981,27 @@ get_submission_via_trajectory_simulation <- function(
     simulate_trajectories_params,
     all_regions=c("National", paste0("Region ", 1:10))
     ) {
-    regional <- any(data$region.type == "HHS Regions")
-    return(
-        rbind.fill(lapply(all_regions, function(region) {
-            get_submission_one_region_via_trajectory_simulation(
-                data = data,
-                analysis_time_season = analysis_time_season,
-                first_analysis_time_season_week = first_analysis_time_season_week,
-                last_analysis_time_season_week = last_analysis_time_season_week,
-                region = region,
-                prediction_target_var = prediction_target_var,
-                incidence_bins = incidence_bins,
-                incidence_bin_names = incidence_bin_names,
-                n_trajectory_sims = n_trajectory_sims,
-                simulate_trajectories_function = simulate_trajectories_function,
-                simulate_trajectories_params = simulate_trajectories_params,
-                regional=regional
-            )
-        }))
-    )
+  require(plyr)
+  
+  regional <- any(data$region_type == "HHS Regions")
+  return(
+    rbind.fill(lapply(all_regions, function(region) {
+      get_submission_one_region_via_trajectory_simulation(
+        data = data,
+        analysis_time_season = analysis_time_season,
+        first_analysis_time_season_week = first_analysis_time_season_week,
+        last_analysis_time_season_week = last_analysis_time_season_week,
+        region = region,
+        prediction_target_var = prediction_target_var,
+        incidence_bins = incidence_bins,
+        incidence_bin_names = incidence_bin_names,
+        n_trajectory_sims = n_trajectory_sims,
+        simulate_trajectories_function = simulate_trajectories_function,
+        simulate_trajectories_params = simulate_trajectories_params,
+        regional=regional
+      )
+    }))
+  )
 }
 
 
@@ -1078,12 +1080,12 @@ get_submission_one_region_via_trajectory_simulation <- function(
       ## load region-specific submission file template
       if(identical(as.integer(weeks_in_first_season_year), 52L)) {
           region_results <- read.csv(file.path(
-              find.package("cdcFlu20172018"),
+              find.package("cdcFlu20182019"),
               "prospective-predictions",
               "region-prediction-template.csv"))
       } else {
           region_results <- read.csv(file.path(
-              find.package("cdcFlu20172018"),
+              find.package("cdcFlu20182019"),
               "prospective-predictions",
               "region-prediction-template-EW53.csv"))
       }
@@ -1093,7 +1095,7 @@ get_submission_one_region_via_trajectory_simulation <- function(
       
       ## load region-specific submission file template
       region_results <- read.csv(file.path(
-          find.package("cdcFlu20172018"),
+          find.package("cdcFlu20182019"),
           "prospective-predictions",
           "state-prediction-template.csv"))
   }
@@ -1639,7 +1641,7 @@ logspace_sub <- function(logx, logy) {
   return(.Call("logspace_sub_C",
     as.numeric(logx),
     as.numeric(logy),
-    PACKAGE = "cdcFlu20172018"))
+    PACKAGE = "cdcFlu20182019"))
 }
 
 #' Calculate log(exp(logx) + exp(logy)) in a somewhat numerically stable way.
@@ -1653,7 +1655,7 @@ logspace_add <- function(logx, logy) {
   return(.Call("logspace_add_C",
     as.numeric(logx),
     as.numeric(logy),
-    PACKAGE = "cdcFlu20172018"))
+    PACKAGE = "cdcFlu20182019"))
 }
 
 #' Calculate log(sum(exp(logx))) in a somewhat numerically stable way.
@@ -1681,7 +1683,7 @@ logspace_sum_matrix_rows <- function(logX) {
     as.numeric(logX),
     as.integer(nrow(logX)),
     as.integer(ncol(logX)),
-    PACKAGE = "cdcFlu20172018"))
+    PACKAGE = "cdcFlu20182019"))
 }
 
 #' Calculate logspace difference of matrix rows in a somewhat numerically stable
@@ -1700,5 +1702,5 @@ logspace_sub_matrix_rows <- function(logX) {
   return(.Call("logspace_sub_matrix_rows_C",
     as.numeric(logX),
     as.integer(nrow(logX)),
-    PACKAGE = "cdcFlu20172018"))
+    PACKAGE = "cdcFlu20182019"))
 }
