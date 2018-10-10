@@ -1081,12 +1081,12 @@ get_submission_one_region_via_trajectory_simulation <- function(
       if(identical(as.integer(weeks_in_first_season_year), 52L)) {
           region_results <- read.csv(file.path(
               find.package("cdcFlu20182019"),
-              "prospective-predictions",
+              "templates",
               "region-prediction-template.csv"))
       } else {
           region_results <- read.csv(file.path(
               find.package("cdcFlu20182019"),
-              "prospective-predictions",
+              "templates",
               "region-prediction-template-EW53.csv"))
       }
   } else {
@@ -1096,7 +1096,7 @@ get_submission_one_region_via_trajectory_simulation <- function(
       ## load region-specific submission file template
       region_results <- read.csv(file.path(
           find.package("cdcFlu20182019"),
-          "prospective-predictions",
+          "templates",
           "state-prediction-template.csv"))
   }
 
