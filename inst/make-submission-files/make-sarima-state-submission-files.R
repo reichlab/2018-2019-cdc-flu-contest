@@ -1,39 +1,26 @@
 ## This code is based on inst/data-processing/create-clean-flu-data.R
-## Updated for SARIMA-state submissions: 11/3/2017
+## Updated for SARIMA-state submissions: 10/9/2018
 
-library(plyr)
-library(dplyr)
-library(tidyr)
-library(lubridate)
-library(MMWRweek)
-library(cdcfluview) ## devtools::install_github("hrbrmstr/cdcfluview", ref="8bd99b7")
-library(forecast)
-library(FluSight)
+library(plyr); library(dplyr)
 library(cdcFlu20182019)
 library(gridExtra)
 
-submissions_save_path <- "inst/submissions/sarima-state"
+submissions_save_path <- "inst/submissions/state-sarima"
 
 data <- download_and_preprocess_state_flu_data()
 
 state_names <- unique(data$region)
 state_names <- state_names[-which(state_names %in% c("Florida", "Louisiana"))]
-
-## workaround to lie to the upcoming function which assumes weighted_ili is outcome
-## data$weighted_ili <- data$unweighted_ili
-
-## make zeroes and NAs very small positive numbers since sarima is taking logs
-data[which(data$weighted_ili<0.00001),"weighted_ili"] <- 0.0005
-data[which(is.na(data$weighted_ili)),"weighted_ili"] <- 0.0005
+## state_names <- state_names[1:2] ## for testing
 
 ### Do prediction for sarima
-## Parameters used in simulating trajectories via kcde
+## Parameters used in simulating trajectories
 simulate_trajectories_sarima_params <- list(
-    fits_filepath = "inst/estimation/sarima-state/fits-seasonal-differencing",
-    prediction_target_var = "unweighted_ili",
-    seasonal_difference = TRUE,
-    transformation = "log",
-    first_test_season = "2018/2019"
+  fits_filepath = "inst/estimation/state-sarima/fits-seasonal-differencing",
+  prediction_target_var = "unweighted_ili",
+  seasonal_difference = TRUE,
+  transformation = "log",
+  first_test_season = "2018/2019"
 )
 
 sarima_res <- get_submission_via_trajectory_simulation(
@@ -46,7 +33,7 @@ sarima_res <- get_submission_via_trajectory_simulation(
         lower = c(0, seq(from = 0.05, to = 12.95, by = 0.1)),
         upper = c(seq(from = 0.05, to = 12.95, by = 0.1), Inf)),
     incidence_bin_names = as.character(seq(from = 0, to = 13, by = 0.1)),
-    n_trajectory_sims = 10000,
+    n_trajectory_sims = 100,
     simulate_trajectories_function = sample_predictive_trajectories_arima_wrapper,
     simulate_trajectories_params = simulate_trajectories_sarima_params,
     all_regions = state_names)

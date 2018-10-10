@@ -4,8 +4,7 @@
 ## 9 Oct 2018: updated for 2018/2019 season, including sarimaTD migration
 ## Nicholas Reich, Casey Gibson
 
-library(plyr)
-library(dplyr)
+library(plyr);library(dplyr)
 library(tidyr)
 library(lubridate)
 library(cdcFlu20182019)
@@ -23,9 +22,6 @@ state_names <- state_names[-which(state_names %in% c("Florida", "Louisiana"))]
 ## Florida and Louisiana: drop completely
 ## PR: starts in end of 2013
 ## VI: starts in end of 2015
-
-## remove zeros since sarima is taking logs
-state_flu[which(state_flu$weighted_ili<0.00001),"weighted_ili"] <- NA
 
 region_seasons <- expand.grid(
   region = state_names,

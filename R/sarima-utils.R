@@ -1,5 +1,76 @@
 ## utility functions for SARIMA fits
 
+#' A wrapper around simulate.sarimaTD suitable for use as the
+#' \code{simulate_trajectories_function} argument to
+#' \code{get_log_scores_via_trajectory_simulation}.
+#'
+#' @param n_sims number of trajectories to simulate
+#' @param max_prediction_horizon how many steps ahead to simulate
+#' @param data data set
+#' @param region region
+#' @param analysis_time_season season in which we're predicting
+#' @param analysis_time_season_week week of the season in which we're making our
+#'   predictions, using all data up to the analysis time to make predictions for
+#'   later time points
+#' @param params other parameters.  A list with the following entries:
+#'   * fits_filepath = path to a directory where SARIMA model fits are located
+#'   * prediction_target_var = string naming variable in data we are predicting
+#'   * seasonal_difference = logical specifying whether a seasonal difference
+#'       should be computed manually before passing to auto.arima
+#'   * transformation = string, either "log", "box-cox", or "none", indicating
+#'       type of transformation to do
+#'   * first_test_season = string, in format of "2011/2012", specifying first
+#'       test season.
+#'
+#' @return an n_sims by h matrix with simulated values
+#'
+#' @export
+sample_predictive_trajectories_arima_wrapper <- function(
+  n_sims,
+  max_prediction_horizon,
+  data,
+  region,
+  analysis_time_season,
+  analysis_time_season_week,
+  params
+) {
+  
+  require(sarimaTD)
+  
+  ## load SARIMA fit
+  reg_str <- gsub(" ", "_", region)
+  
+  fit_filepath <- file.path(
+    params$fits_filepath,
+    paste0(
+      "sarima-",
+      reg_str,
+      "-seasonal_difference_", params$seasonal_difference,
+      "-transformation_", params$transformation,
+      "-first_test_season_",
+      gsub("/", "_", params$first_test_season),
+      ".rds"))
+  
+  ## If no SARIMA fit, exit early by returning a matrix of NAs
+  if(!file.exists(fit_filepath)) {
+    warning("no file found for existing fit.")
+    return(matrix(NA, nrow = n_sims, ncol = max_prediction_horizon))
+  }
+  
+  sarima_fit <- readRDS(file = fit_filepath)
+  
+  inc_trajectory_samples <- sarimaTD:::simulate.sarimaTD(
+    sarima_fit,
+    nsim = n_sims,
+    seed = NULL,
+    newdata = data,
+    h = max_prediction_horizon
+  )
+  
+  return(inc_trajectory_samples)
+}
+
+
 #' Estimate SARIMA model using data up to but not including first_test_season
 #'
 #' @param data regional dataset with structure like regionflu-cleaned
