@@ -4,14 +4,16 @@
 
 library(tidyr)
 library(dplyr)
+library(readr)
 
-dat <- read.csv("https://raw.githubusercontent.com/cdcepi/FluSight-forecasts/master/wILI_Baseline.csv")
+## temporary link from pull request file. change back when master file is updated.
+## dat <- read.csv("https://raw.githubusercontent.com/cdcepi/FluSight-forecasts/master/wILI_Baseline.csv")
+dat <- read_csv("https://raw.githubusercontent.com/cdcepi/FluSight-forecasts/1d0658560fa2378eff7b89f903582af4b3b07e5e/wILI_Baseline.csv")
 dat <- as_data_frame(dat) %>%
-    gather(key=year, value=baseline, -X) %>%
-    transmute(region = as.character(X),
-              season = substr(year, start=2, stop=10), ## removes X at beginning of season name
+    gather(key=year, value=baseline, -X1) %>%
+    transmute(region = as.character(X1),
+              season = substr(year, start=1, stop=9), ## removes X at beginning of season name
               baseline=baseline)
-dat$season <- gsub("\\.", "/", dat$season) ## replaces . with / in season string
 
 ## fill in baselines for seasons before 2007/2008 with means
 mean_region_baseline <- dat %>%
@@ -32,6 +34,9 @@ for(first_season_year in 2006:1997) {
 }
 
 flu_onset_baselines <- as.data.frame(dat)
+
+# ggplot(flu_onset_baselines) +
+#   geom_line(aes(x=as.numeric(substr(season, 1,4)), y=baseline, color=region))
 
 write.csv(dat, "data-raw/flu_onset_baselines.csv", quote = FALSE, row.names = FALSE)
 save(flu_onset_baselines, file = "data/flu_onset_baselines.rdata")
