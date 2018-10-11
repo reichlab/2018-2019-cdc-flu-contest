@@ -1,9 +1,13 @@
 ## make a set of prospective prediction files for KDE/GAM model for 2017/2018 season
 ## Nicholas Reich
-## October 2017
+## October 2017: created
+## October 2018: updated
 
 library(cdcFlu20182019)
 library(doMC)
+
+FIRST_YEAR_OF_CURRENT_SEASON <- 2018
+this_season <- paste0(FIRST_YEAR_OF_CURRENT_SEASON, "/", FIRST_YEAR_OF_CURRENT_SEASON+1)
 
 data(flu_data)
 
@@ -20,7 +24,7 @@ season_weeks <- 10:43
 region_strings <- c("National", paste("Region", 1:10))
 fit_path <- "inst/estimation/region-kde/fits/"
 
-registerDoMC(4)
+registerDoMC(11)
 
 ## fit 2018/2017 models
 foreach(reg=region_strings) %dopar% {
@@ -32,17 +36,17 @@ foreach(reg=region_strings) %dopar% {
     # reg = region_strings[1]
     fit_region_kdes(flu_data, 
         region=reg,
-        first_fit_year = 2017,
+        first_fit_year = FIRST_YEAR_OF_CURRENT_SEASON,
         first_fit_week = 20, 
-        last_fit_year = 2017,
+        last_fit_year = FIRST_YEAR_OF_CURRENT_SEASON,
         path = fit_path)
 }
 
 ## make entry files
 foreach(season_week = season_weeks) %dopar% {
-    make_one_kde_prediction_file(save_path = "inst/prospective-predictions/kde/",
+    make_one_kde_prediction_file(save_path = "inst/submissions/region-kde/",
         fits_path = fit_path,
-        season = "2017/2018",
+        season = this_season,
         season_week = season_week,
         n_sim = n_sims)
 }

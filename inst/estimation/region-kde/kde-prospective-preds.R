@@ -6,14 +6,16 @@
 library(cdcFlu20182019)
 library(doMC)
 
+FIRST_YEAR_OF_LAST_SEASON <- 2017
+
 n_sims <- 10000
-prospective_seasons <- paste0(2010:2016, "/", 2011:2017)
+prospective_seasons <- paste0(2010:FIRST_YEAR_OF_LAST_SEASON, "/", 2011:(FIRST_YEAR_OF_LAST_SEASON+1))
 season_weeks <- 10:43
 
-## for 2017-2018 season, 
-## first predictions due on 11/6/2017 (EW45 == SW15)
-## using data posted on 11/3/2016 that includes up to EW43 == SW13
-## last predictions due on 5/14/2017 (EW20 == SW 42)
+## for 2018-2019 season, 
+## first predictions due on 10/29/2018 (EW44 == SW14)  MMWRweek("2018-10-29")
+## using data posted on 10/26/2016 that includes up to EW42 == SW12
+## last predictions due on 5/13/2017 (EW20 == SW 42) MMWRweek("2019-05-13")
 ## last predictions use data through EW18 == SW40
 ## first_analysis_time_season_week could be set to 15, but padding at front end
 registerDoMC(4)

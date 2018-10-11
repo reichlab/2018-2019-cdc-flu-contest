@@ -11,9 +11,9 @@ library(doMC)
 ## setup
 data(flu_data)
 region_strings <- c("National", paste("Region", 1:10))
-fit_path <- "inst/estimation/kde/fits/"
+fit_path <- "inst/estimation/region-kde/fits/"
 method <- "kde"
-analysis_time_seasons <- paste0(2010:2016, "/", 2011:2017)
+analysis_time_seasons <- paste0(2010:2017, "/", 2011:2018)
 
 ## setup for random seeds
 rngstream <- get_initial_rng_substream()
@@ -30,7 +30,7 @@ foreach(reg=region_strings) %dopar% {
                   region=reg,
                   first_fit_year = 2010,
                   first_fit_week = 31,
-                  last_fit_year = 2016,
+                  last_fit_year = 2017,
                   path = fit_path)
   
   ## make leave-one-season-out predictions for training seasons
