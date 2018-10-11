@@ -9,21 +9,20 @@ data(flu_data)
 
 n_sims <- 100000
 
-## for 2017-2018 season, 
-## first predictions due on 11/6/2017 (EW45 == SW15)
-## using data posted on 11/3/2016 that includes up to EW43 == SW13
-## last predictions due on 5/14/2017 (EW20 == SW 42)
+## for 2018-2019 season, 
+## first predictions due on 10/29/2018 (EW44 == SW14)  MMWRweek("2018-10-29")
+## using data posted on 10/26/2016 that includes up to EW42 == SW12
+## last predictions due on 5/13/2017 (EW20 == SW 42) MMWRweek("2019-05-13")
 ## last predictions use data through EW18 == SW40
-## first_analysis_time_season_week could be set to 15, but padding at front end to 10
+## first_analysis_time_season_week could be set to 15, but padding at front end
 
 season_weeks <- 10:43
 region_strings <- c("National", paste("Region", 1:10))
-fit_path <- "inst/estimation/kde/fits/"
+fit_path <- "inst/estimation/region-kde/fits/"
 
 registerDoMC(4)
 
-## fit 2017/2018 models
-
+## fit 2018/2017 models
 foreach(reg=region_strings) %dopar% {
     
     ## fit models on training seasons, using only prospective data, not LOSO
