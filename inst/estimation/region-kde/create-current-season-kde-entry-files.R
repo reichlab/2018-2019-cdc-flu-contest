@@ -24,30 +24,31 @@ season_weeks <- 10:43
 region_strings <- c("National", paste("Region", 1:10))
 fit_path <- "inst/estimation/region-kde/fits/"
 
-registerDoMC(11)
+registerDoMC(3)
 
-## fit 2018/2017 models
+## fit 2018/2019 models
 foreach(reg=region_strings) %dopar% {
     
-    ## fit models on training seasons, using only prospective data, not LOSO
-    ## this function call saves a set of .rds files that contain the list defining a "KDE fit" 
-    ## one fit for each (prospective season, region) pair
-    
-    # reg = region_strings[1]
-    fit_region_kdes(flu_data, 
-        region=reg,
-        first_fit_year = FIRST_YEAR_OF_CURRENT_SEASON,
-        first_fit_week = 20, 
-        last_fit_year = FIRST_YEAR_OF_CURRENT_SEASON,
-        path = fit_path)
+  ## fit models on training seasons, using only prospective data, not LOSO
+  ## this function call saves a set of .rds files that contain the list defining a "KDE fit" 
+  ## one fit for each (prospective season, region) pair
+  
+  # reg = region_strings[1]
+  fit_region_kdes(flu_data, 
+    region=reg,
+    first_fit_year = FIRST_YEAR_OF_CURRENT_SEASON,
+    last_fit_year = FIRST_YEAR_OF_CURRENT_SEASON,
+    first_fit_week = 20, 
+    path = fit_path)
 }
 
 ## make entry files
 foreach(season_week = season_weeks) %dopar% {
-    make_one_kde_prediction_file(save_path = "inst/submissions/region-kde/",
-        fits_path = fit_path,
-        season = this_season,
-        season_week = season_week,
-        n_sim = n_sims)
+  ## season_week <- season_weeks[1]
+  make_one_kde_prediction_file(save_path = "inst/submissions/region-kde/",
+    fits_path = fit_path,
+    season = this_season,
+    season_week = season_week,
+    n_sim = n_sims)
 }
 
