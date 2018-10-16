@@ -63,7 +63,7 @@ sample_predictive_trajectories_arima_wrapper <- function(
     sarima_fit,
     nsim = n_sims,
     seed = NULL,
-    newdata = data,
+    newdata = data[, params$prediction_target_var],
     h = max_prediction_horizon
   )
   
