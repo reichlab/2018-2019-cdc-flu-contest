@@ -21,7 +21,7 @@ get_partially_revised_ilinet <- function(region_str, epiweek_str) {
 
   ## from ilinet, via DELPHI API
   partially_revised_data <- readRDS(file.path(
-      find.package("cdcFlu20172018"),
+      find.package("cdcFlu20182019"),
       "data",
       "flu_data_with_backfill.rds")) %>%
     dplyr::filter(region == region_str)

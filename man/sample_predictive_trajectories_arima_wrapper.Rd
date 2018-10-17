@@ -2,7 +2,7 @@
 % Please edit documentation in R/sarima-utils.R
 \name{sample_predictive_trajectories_arima_wrapper}
 \alias{sample_predictive_trajectories_arima_wrapper}
-\title{A wrapper around sample_predictive_trajectories_arima suitable for use as the
+\title{A wrapper around simulate.sarimaTD suitable for use as the
 \code{simulate_trajectories_function} argument to
 \code{get_log_scores_via_trajectory_simulation}.}
 \usage{
@@ -39,11 +39,7 @@ later time points}
 an n_sims by h matrix with simulated values
 }
 \description{
-This function does a few things worth noting.  It subsets data to the
-analysis time.  It pulls in an appropriate SARIMA fit, either a
-leave-one-season-out fit if the analysis time is before the first test season
-or a fit based on all of the training data if the analysis time is in or
-after the first test season.  It linearly interpolates missing values.
-It handles log transformations and possible seasonal differencing that may
-be done outside of functionality in the forecast package.
+A wrapper around simulate.sarimaTD suitable for use as the
+\code{simulate_trajectories_function} argument to
+\code{get_log_scores_via_trajectory_simulation}.
 }

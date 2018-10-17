@@ -9,5 +9,5 @@
 Code and submissions for 2018-2019 CDC flu prediction contest
 }
 \author{
-Evan Ray <elray@umass.edu>
+Evan Ray <eray@mtholyoke.edu>
 }

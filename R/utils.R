@@ -1,140 +1,114 @@
 
 #' Download and preprocess the latest CDC flu data, both national and regional
 #'
+#' @param latest_year year through which data should be downloaded, defaults to current year
+#'
 #' @return data frame with latest flu data, preprocessed
 #' @export
-download_and_preprocess_flu_data <- function() {
-  ### The following lines can be used to manually fix issue with lack of https in get_flu_data, until the package is updated
-  # debug(get_flu_data)
-  # unlink(out_file)
-  # tmp <- POST("https://gis.cdc.gov/grasp/fluview/FluViewPhase2CustomDownload.ashx",
-  #   body = params, write_disk(out_file))
+download_and_preprocess_flu_data <- function(latest_year = as.numeric(format(Sys.Date(), "%Y"))) {  
+  require(cdcfluview)
+  require(lubridate)
+  require(dplyr)
+  require(MMWRweek)
 
-  regionflu <- get_flu_data("hhs", sub_region=1:10, data_source="ilinet", years=1997:2017)
-  usflu <- get_flu_data("national", sub_region=NA, data_source="ilinet", years=1997:2017)
-
-  ## make AGE cols in usflu integer data type
-  cols <- grepl('^AGE', colnames(regionflu))
-  regionflu[,cols] <- sapply(regionflu[,cols], as.integer)
-  cols <- grepl('^AGE', colnames(usflu))
-  usflu[,cols] <- sapply(usflu[,cols], as.integer)
-
-
-  data <- bind_rows(regionflu, usflu)
-
-  data <- transmute(data,
-    region.type = `REGION TYPE`,
-    region = REGION,
-    year = YEAR,
-    week = WEEK,
-    time = as.POSIXct(MMWRweek2Date(YEAR, WEEK)),
-    weighted_ili = as.numeric(`% WEIGHTED ILI`))
-
-  ## set national region to "National"
-  data$region[data$region == "X"] <- "National"
-
+  regionflu <- ilinet(region="hhs", years= 1997:latest_year)
+  regionflu$region <- as.character(regionflu$region)
+  
+  usflu <- ilinet(region="national", years= 1997:latest_year)
+  
+  flu_data <- bind_rows(regionflu, usflu)
+  
+  flu_data <- transmute(flu_data,
+    region_type = region_type,
+    region = as.factor(region),
+    year = year,
+    week = week,
+    time = as.POSIXct(MMWRweek2Date(year, week)),
+    weighted_ili = weighted_ili)
+  
   ## set zeroes to NAs
-  data[which(data$weighted_ili==0),"weighted_ili"] <- NA
-
-  ## Add time_index column: the number of days since some origin date (1970-1-1 in this case).
-  ## The origin is arbitrary.
-  data$time_index <- as.integer(lubridate::date(data$time) -  ymd(paste("1970", "01", "01", sep = "-")))
-
-  ## Season column: for example, weeks of 2010 up through and including week 30 get season 2009/2010;
-  ## weeks after week 30 get season 2010/2011
-  ## I am not sure where I got that the season as defined as starting on MMWR week 30 from...
-  data$season <- ifelse(
-    data$week <= 30,
-    paste0(data$year - 1, "/", data$year),
-    paste0(data$year, "/", data$year + 1)
+  flu_data[which(flu_data$weighted_ili==0),"weighted_ili"] <- NA
+  
+  ## Add time_index column: the number of days since some origin date
+  ## (1970-1-1 in this case).  The origin is arbitrary.
+  flu_data$time_index <- as.integer(lubridate::date(flu_data$time) -  ymd("1970-01-01"))
+  
+  ## Season column: for example, weeks of 2010 up through and including week 30
+  ## get season 2009/2010; weeks after week 30 get season 2010/2011
+  ## Official CDC flu season for the purposes of prediction runs from week 40 of
+  ## one year to week 20 of the next; the season start week we define here is the
+  ## mid-point of the "off-season"
+  flu_data$season <- ifelse(
+    flu_data$week <= 30,
+    paste0(flu_data$year - 1, "/", flu_data$year),
+    paste0(flu_data$year, "/", flu_data$year + 1)
   )
-
+  
   ## Season week column: week number within season
   ## weeks after week 30 get season_week = week - 30
   ## weeks before week 30 get season_week = week + (number of weeks in previous year) - 30
   ## This computation relies on the start_date function in package MMWRweek,
   ## which is not exported from that package's namespace!!!
-  data$season_week <- ifelse(
-    data$week <= 30,
-    data$week + MMWRweek(MMWRweek:::start_date(data$year) - 1)$MMWRweek - 30,
-    data$week - 30
+  flu_data$season_week <- ifelse(
+    flu_data$week <= 30,
+    flu_data$week + MMWRweek(MMWRweek:::start_date(flu_data$year) - 1)$MMWRweek - 30,
+    flu_data$week - 30
   )
+  
+  flu_data <- as.data.frame(flu_data)
 
-  data$time <- as.POSIXct(data$time)
-
-  data <- as.data.frame(data)
-
-  return(data)
+  return(flu_data)
 }
 
 #' Download and preprocess the latest CDC flu data, state-level
 #'
+#' @param latest_year year through which data should be downloaded, defaults to current year
+#'
 #' @return data frame with latest state-level flu data, preprocessed
 #' @export
-download_and_preprocess_state_flu_data <- function() {
-    ### The following lines can be used to manually fix issue with lack of https in get_flu_data, until the package is updated
-    # debug(get_flu_data)
-    # unlink(out_file)
-    # tmp <- POST("https://gis.cdc.gov/grasp/fluview/FluViewPhase2CustomDownload.ashx",
-    #   body = params, write_disk(out_file))
-    require(cdcfluview)
-    require(MMWRweek)
-    require(dplyr)
-    require(lubridate)
-    
-    flu_data_raw <- get_flu_data(
-        region = "state",
-        sub_region = "all",
-        data_source = "ilinet",
-        years = 1997:2017
-    )
-    
-    ## ggplot(flu_data, aes(x=YEAR+WEEK/53, y=`%UNWEIGHTED ILI`)) + geom_line() + facet_wrap(~REGION)
-    
-    flu_data <- transmute(flu_data_raw,
-        region.type = `REGION TYPE`,
-        region = REGION,
-        year = YEAR,
-        week = WEEK,
-        time = as.POSIXct(MMWRweek2Date(YEAR, WEEK)),
-        unweighted_ili = as.numeric(`%UNWEIGHTED ILI`),
-        ili_count = ILITOTAL,
-        patient_count = `TOTAL PATIENTS`,
-        provider_count = `NUM. OF PROVIDERS`
-    )
-    
-    ## set rows with denominator zeroes to NAs
-    flu_data[which(flu_data$patient_count==0),"weighted_ili"] <- NA
-    
-    ## Add time_index column: the number of days since some origin date
-    ## (1970-1-1 in this case).  The origin is arbitrary.
-    flu_data$time_index <- as.integer(lubridate::date(flu_data$time) -  ymd("1970-01-01"))
-    
-    ## Season column: for example, weeks of 2010 up through and including week 30
-    ## get season 2009/2010; weeks after week 30 get season 2010/2011
-    ## Official CDC flu season for the purposes of prediction runs from week 40 of
-    ## one year to week 20 of the next; the season start week we define here is the
-    ## mid-point of the "off-season"
-    flu_data$season <- ifelse(
-        flu_data$week <= 30,
-        paste0(flu_data$year - 1, "/", flu_data$year),
-        paste0(flu_data$year, "/", flu_data$year + 1)
-    )
-    
-    ## Season week column: week number within season
-    ## weeks after week 30 get season_week = week - 30
-    ## weeks before week 30 get season_week = week + (number of weeks in previous year) - 30
-    ## This computation relies on the start_date function in package MMWRweek,
-    ## which is not exported from that package's namespace!!!
-    flu_data$season_week <- ifelse(
-        flu_data$week <= 30,
-        flu_data$week + MMWRweek(MMWRweek:::start_date(flu_data$year) - 1)$MMWRweek - 30,
-        flu_data$week - 30
-    )
-    
-    state_flu <- as.data.frame(flu_data)
-    
-    return(state_flu)
+download_and_preprocess_state_flu_data <- function(latest_year = as.numeric(format(Sys.Date(), "%Y"))) {
+  
+  require(cdcfluview)
+  require(MMWRweek)
+  require(dplyr)
+  require(lubridate)
+  
+  flu_data_raw <- ilinet(region="state", years=1997:latest_year)
+  
+  flu_data <- mutate(flu_data_raw, time = as.POSIXct(MMWRweek2Date(year, week)))
+  
+  ## set rows with denominator zeroes to NAs
+  flu_data[which(flu_data$total_patients==0),"weighted_ili"] <- NA
+  
+  ## Add time_index column: the number of days since some origin date
+  ## (1970-1-1 in this case).  The origin is arbitrary.
+  flu_data$time_index <- as.integer(lubridate::date(flu_data$time) -  ymd("1970-01-01"))
+  
+  ## Season column: for example, weeks of 2010 up through and including week 30
+  ## get season 2009/2010; weeks after week 30 get season 2010/2011
+  ## Official CDC flu season for the purposes of prediction runs from week 40 of
+  ## one year to week 20 of the next; the season start week we define here is the
+  ## mid-point of the "off-season"
+  flu_data$season <- ifelse(
+    flu_data$week <= 30,
+    paste0(flu_data$year - 1, "/", flu_data$year),
+    paste0(flu_data$year, "/", flu_data$year + 1)
+  )
+  
+  ## Season week column: week number within season
+  ## weeks after week 30 get season_week = week - 30
+  ## weeks before week 30 get season_week = week + (number of weeks in previous year) - 30
+  ## This computation relies on the start_date function in package MMWRweek,
+  ## which is not exported from that package's namespace!!!
+  flu_data$season_week <- ifelse(
+    flu_data$week <= 30,
+    flu_data$week + MMWRweek(MMWRweek:::start_date(flu_data$year) - 1)$MMWRweek - 30,
+    flu_data$week - 30
+  )
+  
+  state_flu <- as.data.frame(flu_data)
+  
+  return(state_flu)
 }
 
 
@@ -1007,25 +981,27 @@ get_submission_via_trajectory_simulation <- function(
     simulate_trajectories_params,
     all_regions=c("National", paste0("Region ", 1:10))
     ) {
-    regional <- any(data$region.type == "HHS Regions")
-    return(
-        rbind.fill(lapply(all_regions, function(region) {
-            get_submission_one_region_via_trajectory_simulation(
-                data = data,
-                analysis_time_season = analysis_time_season,
-                first_analysis_time_season_week = first_analysis_time_season_week,
-                last_analysis_time_season_week = last_analysis_time_season_week,
-                region = region,
-                prediction_target_var = prediction_target_var,
-                incidence_bins = incidence_bins,
-                incidence_bin_names = incidence_bin_names,
-                n_trajectory_sims = n_trajectory_sims,
-                simulate_trajectories_function = simulate_trajectories_function,
-                simulate_trajectories_params = simulate_trajectories_params,
-                regional=regional
-            )
-        }))
-    )
+  require(plyr)
+  
+  regional <- any(data$region_type == "HHS Regions")
+  return(
+    rbind.fill(lapply(all_regions, function(region) {
+      get_submission_one_region_via_trajectory_simulation(
+        data = data,
+        analysis_time_season = analysis_time_season,
+        first_analysis_time_season_week = first_analysis_time_season_week,
+        last_analysis_time_season_week = last_analysis_time_season_week,
+        region = region,
+        prediction_target_var = prediction_target_var,
+        incidence_bins = incidence_bins,
+        incidence_bin_names = incidence_bin_names,
+        n_trajectory_sims = n_trajectory_sims,
+        simulate_trajectories_function = simulate_trajectories_function,
+        simulate_trajectories_params = simulate_trajectories_params,
+        regional=regional
+      )
+    }))
+  )
 }
 
 
@@ -1104,13 +1080,13 @@ get_submission_one_region_via_trajectory_simulation <- function(
       ## load region-specific submission file template
       if(identical(as.integer(weeks_in_first_season_year), 52L)) {
           region_results <- read.csv(file.path(
-              find.package("cdcFlu20172018"),
-              "prospective-predictions",
+              find.package("cdcFlu20182019"),
+              "templates",
               "region-prediction-template.csv"))
       } else {
           region_results <- read.csv(file.path(
-              find.package("cdcFlu20172018"),
-              "prospective-predictions",
+              find.package("cdcFlu20182019"),
+              "templates",
               "region-prediction-template-EW53.csv"))
       }
   } else {
@@ -1119,8 +1095,8 @@ get_submission_one_region_via_trajectory_simulation <- function(
       
       ## load region-specific submission file template
       region_results <- read.csv(file.path(
-          find.package("cdcFlu20172018"),
-          "prospective-predictions",
+          find.package("cdcFlu20182019"),
+          "templates",
           "state-prediction-template.csv"))
   }
 
@@ -1665,7 +1641,7 @@ logspace_sub <- function(logx, logy) {
   return(.Call("logspace_sub_C",
     as.numeric(logx),
     as.numeric(logy),
-    PACKAGE = "cdcFlu20172018"))
+    PACKAGE = "cdcFlu20182019"))
 }
 
 #' Calculate log(exp(logx) + exp(logy)) in a somewhat numerically stable way.
@@ -1679,7 +1655,7 @@ logspace_add <- function(logx, logy) {
   return(.Call("logspace_add_C",
     as.numeric(logx),
     as.numeric(logy),
-    PACKAGE = "cdcFlu20172018"))
+    PACKAGE = "cdcFlu20182019"))
 }
 
 #' Calculate log(sum(exp(logx))) in a somewhat numerically stable way.
@@ -1707,7 +1683,7 @@ logspace_sum_matrix_rows <- function(logX) {
     as.numeric(logX),
     as.integer(nrow(logX)),
     as.integer(ncol(logX)),
-    PACKAGE = "cdcFlu20172018"))
+    PACKAGE = "cdcFlu20182019"))
 }
 
 #' Calculate logspace difference of matrix rows in a somewhat numerically stable
@@ -1726,5 +1702,5 @@ logspace_sub_matrix_rows <- function(logX) {
   return(.Call("logspace_sub_matrix_rows_C",
     as.numeric(logX),
     as.integer(nrow(logX)),
-    PACKAGE = "cdcFlu20172018"))
+    PACKAGE = "cdcFlu20182019"))
 }
