@@ -19,7 +19,7 @@ simulate_trajectories_sarima_params <- list(
   fits_filepath = "inst/estimation/state-sarima/fits-seasonal-differencing",
   prediction_target_var = "unweighted_ili",
   seasonal_difference = TRUE,
-  transformation = "log",
+  transformation = "box-cox",
   first_test_season = "2018/2019"
 )
 
