@@ -742,7 +742,8 @@ get_log_scores_via_trajectory_simulation <- function(
       first_season_obs_ind <- min(which(data$season == analysis_time_season))
       subset_trajectory_samples <- cbind(
         matrix(
-          rep(data[seq(from = first_season_obs_ind, to = analysis_time_ind), prediction_target_var], each = n_trajectory_sims),
+          rep(data[seq(from = first_season_obs_ind, to = analysis_time_ind), prediction_target_var], 
+              each = nrow(subset_trajectory_samples)),
           nrow = nrow(subset_trajectory_samples)
         ),
         subset_trajectory_samples
@@ -1166,8 +1167,8 @@ get_submission_one_region_via_trajectory_simulation <- function(
     first_season_obs_ind <- min(which(data$season == analysis_time_season))
     subset_trajectory_samples <- cbind(
       matrix(
-        rep(data[seq(from = first_season_obs_ind, to = analysis_time_ind), prediction_target_var], each = n_trajectory_sims),
-        nrow = n_trajectory_sims
+        rep(data[seq(from = first_season_obs_ind, to = analysis_time_ind), prediction_target_var], each = nrow(subset_trajectory_samples)),
+        nrow = nrow(subset_trajectory_samples)
       ),
       subset_trajectory_samples
     )
@@ -1177,7 +1178,7 @@ get_submission_one_region_via_trajectory_simulation <- function(
     first_season_obs_week <- data$season_week[first_season_obs_ind]
     if(first_season_obs_week != 1) {
       subset_trajectory_samples <- cbind(
-        matrix(NA, nrow = n_trajectory_sims, ncol = first_season_obs_week - 1),
+        matrix(NA, nrow = nrow(subset_trajectory_samples), ncol = first_season_obs_week - 1),
         subset_trajectory_samples
       )
     }
@@ -1216,7 +1217,7 @@ get_submission_one_region_via_trajectory_simulation <- function(
     ## get peak week by sim ind
     ## note that some sim inds may have more than 1 peak week...
     peak_weeks_by_sim_ind <- unlist(lapply(
-      seq_len(n_trajectory_sims),
+      seq_len(nrow(subset_trajectory_samples)),
       function(sim_ind) {
         bin_val <- peak_inc_bin_by_sim_ind[sim_ind]
         peak_season_weeks <- which(
