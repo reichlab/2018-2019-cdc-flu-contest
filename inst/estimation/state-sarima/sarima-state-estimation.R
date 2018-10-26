@@ -17,7 +17,7 @@ registerDoMC(25)
 
 data(state_flu_data)
 state_names <- unique(state_flu$region)
-state_names <- state_names[-which(state_names %in% c("Florida", "Louisiana"))]
+state_names <- state_names[-which(state_names %in% c("Florida"))]
 
 ## Florida and Louisiana: drop completely
 ## PR: starts in end of 2013

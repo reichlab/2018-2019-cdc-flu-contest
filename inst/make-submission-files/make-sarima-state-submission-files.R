@@ -11,7 +11,7 @@ submissions_save_path <- "inst/submissions/state-sarima"
 data <- download_and_preprocess_state_flu_data()
 
 state_names <- unique(data$region)
-state_names <- state_names[-which(state_names %in% c("Florida", "Louisiana"))]
+state_names <- state_names[-which(state_names %in% c("Florida"))]
 ## state_names <- state_names[1:2] ## for testing
 
 ### Do prediction for sarima
