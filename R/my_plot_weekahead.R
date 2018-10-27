@@ -28,11 +28,11 @@ my_plot_weekahead <- function(dat, region, wk=1, ilimax, years=NA){
         tail(NatFluDat, n=1),
         tail(StateFluDat, n=53))[,c("REGION","% WEIGHTED ILI")]
     if(region=="US National"){
-        CurrentILIPer <- CFluDat[CFluDat$REGION=="National", "% WEIGHTED ILI"]
+        CurrentILIPer <- as.numeric(CFluDat[CFluDat$REGION=="National", "% WEIGHTED ILI"])
     }else if(region %in% paste("Region", 1:10)){
-        CurrentILIPer <- CFluDat[CFluDat$REGION==paste("Region", strsplit(region, " ")[[1]][3]), "% WEIGHTED ILI"]
+        CurrentILIPer <- as.numeric(CFluDat[CFluDat$REGION==paste("Region", strsplit(region, " ")[[1]][3]), "% WEIGHTED ILI"])
     } else {
-        CurrentILIPer <- CFluDat[CFluDat$REGION==region, "% WEIGHTED ILI"]
+        CurrentILIPer <- as.numeric(CFluDat[CFluDat$REGION==region, "% WEIGHTED ILI"])
     }
     
     if(wk==1){
