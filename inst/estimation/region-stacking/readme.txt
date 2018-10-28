@@ -1,0 +1,1 @@
+scores-with-20172018.csv was pulled from https://github.com/FluSightNetwork/cdc-flusight-ensemble/tree/master/scores on Oct 11, 2018
