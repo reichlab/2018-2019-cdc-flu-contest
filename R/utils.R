@@ -1394,7 +1394,7 @@ make_predictions_plots <- function(
   require("ggplot2")
 
   predictions <- read.csv(preds_save_file)
-  regional <- data$region.type[1] =="HHS Regions"
+  regional <- data$region_type[1] =="HHS Regions"
   
   if(regional) {
       preds_region_map <- data.frame(
@@ -1494,6 +1494,14 @@ make_predictions_plots <- function(
     print(p_obs, vp = viewport(layout.pos.col = 1, layout.pos.row = 3))
     print(p_peak_timing, vp = viewport(layout.pos.col = 1, layout.pos.row = 4))
     print(p_peak_inc, vp = viewport(layout.pos.col = 2, layout.pos.row = 3))
+    
+    recent_obs <- data[data$region == region & data$season == current_season, "weighted_ili"]
+    recent_obs <- tail(recent_obs, 1)
+    p_1wk <- my_plot_weekahead(res, region = preds_region, wk = 1, ilimax=13, years = 2018:2019) + ggtitle(paste(preds_region, ": 1 wk ahead")) + ylim(0,1) + geom_vline(xintercept = recent_obs)
+    p_2wk <- my_plot_weekahead(res, region = preds_region, wk = 2, ilimax=13, years = 2018:2019) + ylim(0,1) + geom_vline(xintercept = recent_obs)
+    p_3wk <- my_plot_weekahead(res, region = preds_region, wk = 3, ilimax=13, years = 2018:2019) + ylim(0,1) + geom_vline(xintercept = recent_obs)
+    p_4wk <- my_plot_weekahead(res, region = preds_region, wk = 4, ilimax=13, years = 2018:2019) + ylim(0,1) + geom_vline(xintercept = recent_obs)
+    grid.arrange(p_1wk, p_2wk, p_3wk, p_4wk, ncol=1)
   }
 
   dev.off()

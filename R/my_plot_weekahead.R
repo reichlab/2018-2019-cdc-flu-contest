@@ -14,8 +14,8 @@ my_plot_weekahead <- function(dat, region, wk=1, ilimax, years=NA){
     require(ggplot2)
     require(cdcfluview)
     
-    d <- suppressWarnings(subset(dat, location==region & as.numeric(as.character(bin_start_incl)) <= ilimax))
-    d <- d[grep("wk ahead", d$target),]
+    d <- suppressWarnings(subset(dat, Location==region & as.numeric(as.character(Bin_start_incl)) <= ilimax))
+    d <- d[grep("wk ahead", d$Target),]
     
     NatFluDat <- get_flu_data("national", NA, "ilinet", years=years)
     RegFluDat <- get_flu_data("hhs", 1:10, "ilinet", years=years)
@@ -36,24 +36,24 @@ my_plot_weekahead <- function(dat, region, wk=1, ilimax, years=NA){
     }
     
     if(wk==1){
-        return(ggplot(data=subset(d, target=="1 wk ahead"), aes(x=as.numeric(as.character(bin_start_incl)), y=value)) + 
-                geom_point() + labs(title = "1 Week Ahead", x="ILI%", y="Prob") + geom_vline(aes(xintercept = CurrentILIPer)))
+        return(ggplot(data=subset(d, Target=="1 wk ahead"), aes(x=as.numeric(as.character(Bin_start_incl)), y=Value)) + 
+                geom_point() + geom_line() + labs(title = "1 Week Ahead", x="ILI%", y="Prob") + geom_vline(aes(xintercept = CurrentILIPer)))
     }
     
     
     if(wk==2){
-        return(ggplot(data=subset(d, target=="2 wk ahead"), aes(x=as.numeric(as.character(bin_start_incl)), y=value)) + 
-                geom_point() + labs(title = "2 Week Ahead", x="ILI%", y="Prob") + geom_vline(aes(xintercept = CurrentILIPer)))
+        return(ggplot(data=subset(d, Target=="2 wk ahead"), aes(x=as.numeric(as.character(Bin_start_incl)), y=Value)) + 
+                geom_point() + geom_line() + labs(title = "2 Week Ahead", x="ILI%", y="Prob") + geom_vline(aes(xintercept = CurrentILIPer)))
     }
     
     if(wk==3){
-        return(ggplot(data=subset(d, target=="3 wk ahead"), aes(x=as.numeric(as.character(bin_start_incl)), y=value)) + 
-                geom_point() + labs(title = "3 Week Ahead", x="ILI%", y="Prob") + geom_vline(aes(xintercept = CurrentILIPer)))
+        return(ggplot(data=subset(d, Target=="3 wk ahead"), aes(x=as.numeric(as.character(Bin_start_incl)), y=Value)) + 
+                geom_point() + geom_line() + labs(title = "3 Week Ahead", x="ILI%", y="Prob") + geom_vline(aes(xintercept = CurrentILIPer)))
     }
     
     if(wk==4){
-        return(ggplot(data=subset(d, target=="4 wk ahead"), aes(x=as.numeric(as.character(bin_start_incl)), y=value)) + 
-                geom_point() + labs(title = "4 Week Ahead", x="ILI%", y="Prob") + geom_vline(aes(xintercept = CurrentILIPer)))
+        return(ggplot(data=subset(d, Target=="4 wk ahead"), aes(x=as.numeric(as.character(Bin_start_incl)), y=Value)) + 
+                geom_point() + geom_line() + labs(title = "4 Week Ahead", x="ILI%", y="Prob") + geom_vline(aes(xintercept = CurrentILIPer)))
     }
     
 }
