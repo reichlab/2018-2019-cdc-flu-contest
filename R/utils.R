@@ -980,29 +980,55 @@ get_submission_via_trajectory_simulation <- function(
     n_trajectory_sims,
     simulate_trajectories_function,
     simulate_trajectories_params,
-    all_regions=c("National", paste0("Region ", 1:10))
-    ) {
+    all_regions=c("National", paste0("Region ", 1:10)),
+    regional) {
   require(plyr)
+  if (is.na(regional)){
+    regional <- any(data$region_type == "HHS Regions")
+    return(
+      rbind.fill(lapply(all_regions, function(region) {
+        get_submission_one_region_via_trajectory_simulation(
+          data = data,
+          analysis_time_season = analysis_time_season,
+          first_analysis_time_season_week = first_analysis_time_season_week,
+          last_analysis_time_season_week = last_analysis_time_season_week,
+          region = region,
+          prediction_target_var = prediction_target_var,
+          incidence_bins = incidence_bins,
+          incidence_bin_names = incidence_bin_names,
+          n_trajectory_sims = n_trajectory_sims,
+          simulate_trajectories_function = simulate_trajectories_function,
+          simulate_trajectories_params = simulate_trajectories_params,
+          regional=regional
+        )
+      }))
+    )
+  }
   
-  regional <- any(data$region_type == "HHS Regions")
-  return(
-    rbind.fill(lapply(all_regions, function(region) {
-      get_submission_one_region_via_trajectory_simulation(
-        data = data,
-        analysis_time_season = analysis_time_season,
-        first_analysis_time_season_week = first_analysis_time_season_week,
-        last_analysis_time_season_week = last_analysis_time_season_week,
-        region = region,
-        prediction_target_var = prediction_target_var,
-        incidence_bins = incidence_bins,
-        incidence_bin_names = incidence_bin_names,
-        n_trajectory_sims = n_trajectory_sims,
-        simulate_trajectories_function = simulate_trajectories_function,
-        simulate_trajectories_params = simulate_trajectories_params,
-        regional=regional
-      )
-    }))
-  )
+  else if (regional == "Hosp"){
+    return(
+      rbind.fill(lapply(simulate_trajectories_params$age_groups, function(age) {
+        get_submission_one_region_via_trajectory_simulation(
+          data = data,
+          analysis_time_season = analysis_time_season,
+          first_analysis_time_season_week = first_analysis_time_season_week,
+          last_analysis_time_season_week = last_analysis_time_season_week,
+          region = "Entire Network",
+          prediction_target_var = prediction_target_var,
+          incidence_bins = incidence_bins,
+          incidence_bin_names = incidence_bin_names,
+          n_trajectory_sims = n_trajectory_sims,
+          simulate_trajectories_function = simulate_trajectories_function,
+          simulate_trajectories_params = simulate_trajectories_params,
+          regional=regional,
+          age=age
+        )
+      }))
+    )
+  }
+  
+  
+  
 }
 
 
@@ -1068,11 +1094,12 @@ get_submission_one_region_via_trajectory_simulation <- function(
     n_trajectory_sims,
     simulate_trajectories_function,
     simulate_trajectories_params,
-    regional = TRUE) {
+    regional,
+    age) {
   weeks_in_first_season_year <-
     get_num_MMWR_weeks_in_first_season_year(analysis_time_season)
 
-  if(regional){
+  if(regional == "Country"){
       ## find region ID for CDC submission
       region_str <- ifelse(identical(region, "National"),
           "US National",
@@ -1087,10 +1114,10 @@ get_submission_one_region_via_trajectory_simulation <- function(
       } else {
           region_results <- read.csv(file.path(
               find.package("cdcFlu20182019"),
-              "templates",
+              "guidance",
               "region-prediction-template-EW53.csv"))
       }
-  } else {
+  } else if (regional == "Hosp") {
       ## find state ID for CDC submission
       region_str <- region
       
@@ -1098,10 +1125,14 @@ get_submission_one_region_via_trajectory_simulation <- function(
       region_results <- read.csv(file.path(
           find.package("cdcFlu20182019"),
           "templates",
-          "state-prediction-template.csv"))
+          "hosp-prediction-template.csv"))
   }
-
-  region_results$Location <- region_str
+  
+  if (regional !="Hosp"){
+    region_results$Location <- region_str
+  } else {
+    region_results$Location <- age
+  }
 
   ## subset data to be only the region-specific data
   data <- data[data$region == region,]
@@ -1120,7 +1151,8 @@ get_submission_one_region_via_trajectory_simulation <- function(
     region = region,
     analysis_time_season = analysis_time_season,
     analysis_time_season_week = analysis_time_season_week,
-    params = simulate_trajectories_params
+    params = simulate_trajectories_params,
+    age=age
   )
 
   ## Round to nearest 0.1 -- they do this in competition
@@ -1157,7 +1189,7 @@ get_submission_one_region_via_trajectory_simulation <- function(
   ## Predictions for things about the whole season
   if(all(sample_inds_with_na)) {
     stop("Error: NAs in all simulated trajectories, unable to predict seasonal quantities")
-  } else {
+  } else if(region_str != "Entire Network") {
     ## subset to sampled trajectories that are usable/do not have NAs
     subset_trajectory_samples <- trajectory_samples[!sample_inds_with_na, ]
 
@@ -1287,30 +1319,31 @@ get_submission_one_region_via_trajectory_simulation <- function(
       "Value"] <- median(peak_inc_bin_by_sim_ind)
   }
 
-  ## Predictions for incidence in an individual week at prediction horizon ph = 1, ..., 4
-  for(ph in 1:4) {
-    sample_inds_with_na <- is.na(trajectory_samples[, ph])
-
-    ## get sampled incidence values at prediction horizon that are usable/not NAs
-    ph_inc_by_sim_ind <- trajectory_samples[!sample_inds_with_na, ph]
-    ph_inc_bin_by_sim_ind <- get_inc_bin(ph_inc_by_sim_ind, return_character = TRUE)
-
-    ## get bin probabilities and store in regional template
-    ph_inc_bin_log_probs <- log(sapply(
-      incidence_bin_names,
-      function(bin_name) {
-        sum(ph_inc_bin_by_sim_ind == bin_name)
-      })) -
-      log(length(ph_inc_bin_by_sim_ind))
-    ph_inc_bin_log_probs <- ph_inc_bin_log_probs - logspace_sum(ph_inc_bin_log_probs)
-    region_results[
-      region_results$Target == paste0(ph, " wk ahead") & region_results$Type == "Bin",
-      "Value"] <- exp(ph_inc_bin_log_probs)
-    region_results[
-      region_results$Target == paste0(ph, " wk ahead") & region_results$Type == "Point",
-      "Value"] <- median(ph_inc_by_sim_ind)
-  } # ph loop
-
+  
+    ## Predictions for incidence in an individual week at prediction horizon ph = 1, ..., 4
+    for(ph in 1:4) {
+      sample_inds_with_na <- is.na(trajectory_samples[, ph])
+  
+      ## get sampled incidence values at prediction horizon that are usable/not NAs
+      ph_inc_by_sim_ind <- trajectory_samples[!sample_inds_with_na, ph]
+      ph_inc_bin_by_sim_ind <- get_inc_bin(ph_inc_by_sim_ind, return_character = TRUE)
+  
+      ## get bin probabilities and store in regional template
+      ph_inc_bin_log_probs <- log(sapply(
+        incidence_bin_names,
+        function(bin_name) {
+          sum(ph_inc_bin_by_sim_ind == bin_name)
+        })) -
+        log(length(ph_inc_bin_by_sim_ind))
+      ph_inc_bin_log_probs <- ph_inc_bin_log_probs - logspace_sum(ph_inc_bin_log_probs)
+      region_results[
+        region_results$Target == paste0(ph, " wk ahead") & region_results$Type == "Bin",
+        "Value"] <- exp(ph_inc_bin_log_probs)
+      region_results[
+        region_results$Target == paste0(ph, " wk ahead") & region_results$Type == "Point",
+        "Value"] <- median(ph_inc_by_sim_ind)
+    } # ph loop
+  
   return(region_results)
 }
 

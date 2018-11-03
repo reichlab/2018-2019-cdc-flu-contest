@@ -1,0 +1,11 @@
+---
+title: "Survival_homework_3"
+author: "Casey Gibson"
+date: "11/1/2018"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
