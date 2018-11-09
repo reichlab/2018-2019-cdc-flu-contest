@@ -74,3 +74,19 @@ write.csv(sarima_res,
 ### Plots for sanity
 
 sarima_res <- read_entry(res_file)
+
+sarima_res <- read_entry(res_file)
+
+pdf(plot_file, width = 12)
+for(reg in unique(sarima_res$location)){
+  p_peakpct <- plot_peakper(sarima_res, region = reg) + ylim(0,1)
+  p_peakwk <- plot_peakweek(sarima_res, region = reg) + ylim(0,1) +
+    theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust=.5, size=5))
+  p_1wk <- my_plot_weekahead(sarima_res, region = reg, wk = 1, ilimax=13, years = 2018:2019) + ggtitle(paste(reg, ": 1 wk ahead")) + ylim(0,1)
+  p_2wk <- my_plot_weekahead(sarima_res, region = reg, wk = 2, ilimax=13, years = 2018:2019) + ylim(0,1)
+  p_3wk <- my_plot_weekahead(sarima_res, region = reg, wk = 3, ilimax=13, years = 2018:2019) + ylim(0,1)
+  p_4wk <- my_plot_weekahead(sarima_res, region = reg, wk = 4, ilimax=13, years = 2018:2019) + ylim(0,1)
+  grid.arrange(p_1wk, p_2wk, p_3wk, p_4wk, p_peakpct, p_peakwk, ncol=4)
+}
+dev.off()
+

@@ -170,7 +170,7 @@ fit_hosp_sarima <- function(
   first_ind_test_season <- min(which(data$season == first_test_season))
   #data <- data[seq_len(first_ind_test_season - 1), , drop = FALSE]
   sarima_fit <- fit_sarima(
-    y = data[data$age_label==age,]$rate,
+    y = data[data$age_label==age,]$weeklyrate,
     ts_frequency = 52,
     transformation = transformation,
     seasonal_difference = seasonal_difference,
