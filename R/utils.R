@@ -983,8 +983,7 @@ get_submission_via_trajectory_simulation <- function(
     all_regions=c("National", paste0("Region ", 1:10)),
     regional) {
   require(plyr)
-  if (is.na(regional)){
-    regional <- any(data$region_type == "HHS Regions")
+  if (!regional=="Hosp"){
     return(
       rbind.fill(lapply(all_regions, function(region) {
         get_submission_one_region_via_trajectory_simulation(
@@ -1005,7 +1004,7 @@ get_submission_via_trajectory_simulation <- function(
     )
   }
   
-  else if (regional == "Hosp"){
+  else {
     return(
       rbind.fill(lapply(simulate_trajectories_params$age_groups, function(age) {
         get_submission_one_region_via_trajectory_simulation(
@@ -1100,6 +1099,7 @@ get_submission_one_region_via_trajectory_simulation <- function(
     get_num_MMWR_weeks_in_first_season_year(analysis_time_season)
 
   if(regional == "Country"){
+      age <- NA
       ## find region ID for CDC submission
       region_str <- ifelse(identical(region, "National"),
           "US National",
@@ -1127,6 +1127,18 @@ get_submission_one_region_via_trajectory_simulation <- function(
           "templates",
           "hosp-prediction-template.csv"))
   }
+ else if (regional == "State") {
+   age <- NA
+  ## find state ID for CDC submission
+
+  region_str <- region
+  
+  ## load region-specific submission file template
+  region_results <- read.csv(file.path(
+    find.package("cdcFlu20182019"),
+    "templates",
+    "state-prediction-template.csv"))
+}
   
   if (regional !="Hosp"){
     region_results$Location <- region_str
@@ -1152,7 +1164,8 @@ get_submission_one_region_via_trajectory_simulation <- function(
     analysis_time_season = analysis_time_season,
     analysis_time_season_week = analysis_time_season_week,
     params = simulate_trajectories_params,
-    age=age
+    age=age,
+    regional=regional
   )
 
   ## Round to nearest 0.1 -- they do this in competition
@@ -1226,7 +1239,7 @@ get_submission_one_region_via_trajectory_simulation <- function(
       get_inc_bin(subset_trajectory_samples,
         return_character = FALSE)
 
-    if(regional){
+    if(regional == "Country"){
         ## Get onset week for each simulated trajectory
         onset_week_by_sim_ind <-
             apply(binned_subset_trajectory_samples, 1, function(trajectory) {
@@ -1259,7 +1272,7 @@ get_submission_one_region_via_trajectory_simulation <- function(
     ))
 
     ## Get bin probabilities and add to region template
-    if(regional) {
+    if(regional == "Country") {
         onset_week_bins <- c(as.character(seq(from = 10, to = weeks_in_first_season_year - 10, by = 1)), "none")
         onset_bin_log_probs <- log(sapply(
             onset_week_bins,
