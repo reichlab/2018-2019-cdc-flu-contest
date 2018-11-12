@@ -12,7 +12,7 @@ data <- download_and_preprocess_state_flu_data()
 
 state_names <- unique(data$region)
 state_names <- state_names[-which(state_names %in% c("Florida"))]
-## state_names <- state_names[1:2] ## for testing
+#state_names <- state_names[1:2] ## for testing
 
 ### Do prediction for sarima
 ## Parameters used in simulating trajectories
@@ -37,7 +37,8 @@ sarima_res <- get_submission_via_trajectory_simulation(
     n_trajectory_sims = 10000,
     simulate_trajectories_function = sample_predictive_trajectories_arima_wrapper,
     simulate_trajectories_params = simulate_trajectories_sarima_params,
-    all_regions = state_names)
+    all_regions = state_names,
+    regional="State")
 
 
 res_file <- file.path(submissions_save_path,

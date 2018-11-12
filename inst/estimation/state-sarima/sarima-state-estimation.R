@@ -19,6 +19,8 @@ data(state_flu_data)
 state_names <- unique(state_flu$region)
 state_names <- state_names[-which(state_names %in% c("Florida"))]
 
+#state_names <- c("Alabama","Alaska")
+
 ## Florida and Louisiana: drop completely
 ## PR: starts in end of 2013
 ## VI: starts in end of 2015
