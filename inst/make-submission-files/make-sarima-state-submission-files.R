@@ -34,7 +34,7 @@ sarima_res <- get_submission_via_trajectory_simulation(
         lower = c(0, seq(from = 0.05, to = 12.95, by = 0.1)),
         upper = c(seq(from = 0.05, to = 12.95, by = 0.1), Inf)),
     incidence_bin_names = as.character(seq(from = 0, to = 13, by = 0.1)),
-    n_trajectory_sims = 1000,
+    n_trajectory_sims = 10000,
     simulate_trajectories_function = sample_predictive_trajectories_arima_wrapper,
     simulate_trajectories_params = simulate_trajectories_sarima_params,
     all_regions = state_names,
