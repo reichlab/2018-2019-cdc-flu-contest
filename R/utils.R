@@ -61,7 +61,7 @@ create_e_matrix <- function(){
     }
   }
   
-  e <- data.frame(season=long_format_seasons,week=long_format_weeks,lag=long_format_lags,ili=rep(NA,length(long_format_lags)))
+  e <- data.frame(season=long_format_seasons,week=long_format_weeks,lag=long_format_lags,wili=rep(NA,length(long_format_lags)))
   
   backfill_data <- readRDS("data/flu_data_with_backfill.rds")
 
@@ -83,9 +83,9 @@ create_e_matrix <- function(){
               }
             
             
-            e[e$season==long_format_seasons[row_idx] & e$week==long_format_weeks[row_idx] & e$lag == long_format_lags[row_idx],]$ili <-
-              backfill_data[backfill_data$region == "nat" & backfill_data$epiweek==bf_epiweek & backfill_data$issue==bf_issue_week,]$ili
-        
+            e[e$season==long_format_seasons[row_idx] & e$week==long_format_weeks[row_idx] & e$lag == long_format_lags[row_idx],]$wili <-
+              backfill_data[backfill_data$region == "nat" & backfill_data$epiweek==bf_epiweek & backfill_data$issue==bf_issue_week,]$wili-
+            backfill_data[backfill_data$region == "nat" & backfill_data$epiweek==bf_epiweek,]$wili[1]
             }    
         }
       
