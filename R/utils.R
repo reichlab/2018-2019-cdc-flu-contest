@@ -1,4 +1,97 @@
 
+
+#' Download backfill data from the delphi api 
+#' and save to data folder.
+#' Note: We may want to do this periodically to make sure we are up to date
+
+download_backfill_data <- function(){
+    library(plyr) # for rbind.fill
+    library(dplyr)
+    source("https://raw.githubusercontent.com/cmu-delphi/delphi-epidata/master/src/client/delphi_epidata.R")
+    
+    # Fetch data
+    all_obs <- lapply(c("nat", paste0("hhs", 1:10)),
+                      function(region_val) {
+                        lapply(1:51,
+                               function(lag_val) {
+                                 obs_one_lag <- Epidata$fluview(
+                                   regions = list(region_val),
+                                   epiweeks = list(Epidata$range(199740, 201815)),
+                                   lag = list(lag_val))
+                                 
+                                 lapply(obs_one_lag$epidata,
+                                        function(x) {
+                                          x[sapply(x, function(comp) is.null(comp))] <- NA
+                                          return(as.data.frame(x))
+                                        }) %>%
+                                   rbind.fill()
+                               }) %>%
+                          rbind.fill()
+                      }) %>%
+      rbind.fill()
+    
+    saveRDS(all_obs,
+            file = "data/flu_data_with_backfill.rds")
+
+}
+
+
+
+#' Create non-parametric matrix of backfill with dimensions
+#'  n_seasons x n_weeks x n_lags
+#' 
+
+create_e_matrix <- function(){
+
+  seasons <- seq(2017,2017,1) 
+  epi_weeks <- seq(1,52,1)
+  lags <- 1:10
+  
+  long_format_seasons <- c()
+  long_format_weeks <- c()
+  long_format_lags <- c()
+  
+  for (s in seasons){
+    for (w in epi_weeks){
+      for (l in lags){
+        long_format_seasons <- c(long_format_seasons,s)
+        long_format_weeks <- c(long_format_weeks,w)
+        long_format_lags <- c(long_format_lags,l)
+      }
+    }
+  }
+  
+  e <- data.frame(season=long_format_seasons,week=long_format_weeks,lag=long_format_lags,ili=rep(NA,length(long_format_lags)))
+  
+  backfill_data <- readRDS("data/flu_data_with_backfill.rds")
+
+  for (row_idx in 1:length(long_format_seasons)){
+            if (sum(long_format_weeks[row_idx] == 1:9)==1){
+              bf_epiweek <- paste(long_format_seasons[row_idx],0,long_format_weeks[row_idx],sep="")
+            }
+            else{
+              bf_epiweek <- paste(long_format_seasons[row_idx],long_format_weeks[row_idx],sep="")
+            }
+            
+            if (long_format_weeks[row_idx]+long_format_lags[row_idx] <= 52){
+              tmp <- long_format_weeks[row_idx]+long_format_lags[row_idx]
+              if (sum(tmp== 1:9)==1){
+                bf_issue_week <- paste(long_format_seasons[row_idx],0,tmp,sep="")
+              }
+              else{
+                bf_issue_week <- paste(long_format_seasons[row_idx],tmp,sep="")
+              }
+            
+            
+            e[e$season==long_format_seasons[row_idx] & e$week==long_format_weeks[row_idx] & e$lag == long_format_lags[row_idx],]$ili <-
+              backfill_data[backfill_data$region == "nat" & backfill_data$epiweek==bf_epiweek & backfill_data$issue==bf_issue_week,]$ili
+        
+            }    
+        }
+      
+
+      write.csv(e,"data/e")  
+}
 #' Download and preprocess the latest CDC flu data, both national and regional
 #'
 #' @param latest_year year through which data should be downloaded, defaults to current year
@@ -1209,6 +1302,19 @@ get_submission_one_region_via_trajectory_simulation <- function(
     ## Augment trajectory samples with previous observed incidence values
     ## This is where we should be adding in some boostrapping to account
     ## for backfill.
+    
+  
+    e <- read.csv("data/e")
+    current_season <- substr(analysis_time_season,1,4)
+    current_week <- last_analysis_time_season_week+1-analysis_time_season_week
+    lag <- analysis_time_season_week
+    
+    # then something like 
+    # e[e$lag ==lag  & e$week==current_week,prediction_target_var]
+    # to get a random sample from previous seasons with the same 
+    # week and lag value
+    
+    
     first_season_obs_ind <- min(which(data$season == analysis_time_season))
     subset_trajectory_samples <- cbind(
       matrix(
