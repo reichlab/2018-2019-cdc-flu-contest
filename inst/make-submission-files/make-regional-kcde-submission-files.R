@@ -11,6 +11,7 @@ library(forecast)
 library(kcde)
 library(copula)
 library(FluSight)
+library(gridExtra)
 
 submissions_save_path <- "inst/submissions/region-kcde"
 

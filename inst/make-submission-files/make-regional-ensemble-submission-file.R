@@ -8,6 +8,7 @@ library(xgboost)
 library(xgbstack)
 library(FluSight)
 library(cdcFlu20182019)
+library(gridExtra)
 
 
 data <- download_and_preprocess_flu_data()
@@ -107,7 +108,7 @@ for(target in as.character(unique(submission$Target))) {
 
 
 res_file <- file.path(submissions_save_path,
-  "KoT-region",
+  "region-KoT",
   paste0(
     "EW", sprintf("%02d", tail(data$week, 1)),
     "-", tail(data$year, 1),
@@ -120,12 +121,13 @@ write.csv(submission,
 (FluSight::verify_entry_file(res_file))
 
 ### Plots for sanity
+res <- submission
 
 make_predictions_plots(
   preds_save_file = res_file,
   plots_save_file = paste0(
     submissions_save_path,
-    "/KoT-region-plots/",
+    "/region-KoT/plots/",
     tail(data$year, 1),
     "-",
     sprintf("%02d", tail(data$week, 1)),
