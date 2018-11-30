@@ -34,7 +34,7 @@ sample_predictive_trajectories_arima_wrapper <- function(
   analysis_time_season_week,
   params,
   age,
-  regional
+  regional_switch
 ) {
   
   require(sarimaTD)
@@ -42,7 +42,7 @@ sample_predictive_trajectories_arima_wrapper <- function(
   ## load SARIMA fit
   reg_str <- gsub(" ", "_", region)
   
-  if (regional != "Hosp"){
+  if (regional_switch != "Hosp"){
   fit_filepath <- file.path(
     params$fits_filepath,
     paste0(
