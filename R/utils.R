@@ -1304,10 +1304,10 @@ get_submission_one_region_via_trajectory_simulation <- function(
     ## for backfill.
     
   
-    e <- read.csv("data/e")
-    current_season <- substr(analysis_time_season,1,4)
-    current_week <- last_analysis_time_season_week+1-analysis_time_season_week
-    lag <- analysis_time_season_week
+    #e <- read.csv("data/e")
+    # current_season <- substr(analysis_time_season,1,4)
+    # current_week <- last_analysis_time_season_week+1-analysis_time_season_week
+    #lag <- analysis_time_season_week
     
     # then something like 
     # e[e$lag ==lag  & e$week==current_week,prediction_target_var]
