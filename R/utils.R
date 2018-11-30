@@ -1074,9 +1074,9 @@ get_submission_via_trajectory_simulation <- function(
     simulate_trajectories_function,
     simulate_trajectories_params,
     all_regions=c("National", paste0("Region ", 1:10)),
-    regional) {
+    regional_switch) {
   require(plyr)
-  if (!regional=="Hosp"){
+  if (!regional_switch=="Hosp"){
     return(
       rbind.fill(lapply(all_regions, function(region) {
         get_submission_one_region_via_trajectory_simulation(
@@ -1091,7 +1091,7 @@ get_submission_via_trajectory_simulation <- function(
           n_trajectory_sims = n_trajectory_sims,
           simulate_trajectories_function = simulate_trajectories_function,
           simulate_trajectories_params = simulate_trajectories_params,
-          regional=regional
+          regional_switch=regional_switch
         )
       }))
     )
@@ -1112,7 +1112,7 @@ get_submission_via_trajectory_simulation <- function(
           n_trajectory_sims = n_trajectory_sims,
           simulate_trajectories_function = simulate_trajectories_function,
           simulate_trajectories_params = simulate_trajectories_params,
-          regional=regional,
+          regional_switch=regional_switch,
           age=age
         )
       }))
@@ -1186,12 +1186,12 @@ get_submission_one_region_via_trajectory_simulation <- function(
     n_trajectory_sims,
     simulate_trajectories_function,
     simulate_trajectories_params,
-    regional,
+    regional_switch,
     age) {
   weeks_in_first_season_year <-
     get_num_MMWR_weeks_in_first_season_year(analysis_time_season)
 
-  if(regional == "Country"){
+  if(regional_switch == "Country"){
       age <- NA
       ## find region ID for CDC submission
       region_str <- ifelse(identical(region, "National"),
@@ -1210,17 +1210,14 @@ get_submission_one_region_via_trajectory_simulation <- function(
               "guidance",
               "region-prediction-template-EW53.csv"))
       }
-  } else if (regional == "Hosp") {
-      ## find state ID for CDC submission
-      region_str <- region
-      
+  } else if (regional_switch == "Hosp") {
       ## load region-specific submission file template
       region_results <- read.csv(file.path(
           find.package("cdcFlu20182019"),
           "templates",
           "hosp-prediction-template.csv"))
   }
- else if (regional == "State") {
+ else if (regional_switch == "State") {
    age <- NA
   ## find state ID for CDC submission
 
@@ -1233,7 +1230,7 @@ get_submission_one_region_via_trajectory_simulation <- function(
     "state-prediction-template.csv"))
 }
   
-  if (regional !="Hosp"){
+  if (regional_switch !="Hosp"){
     region_results$Location <- region_str
   } else {
     region_results$Location <- age
@@ -1258,7 +1255,7 @@ get_submission_one_region_via_trajectory_simulation <- function(
     analysis_time_season_week = analysis_time_season_week,
     params = simulate_trajectories_params,
     age=age,
-    regional=regional
+    regional_switch=regional_switch
   )
 
   ## Round to nearest 0.1 -- they do this in competition
@@ -1345,7 +1342,7 @@ get_submission_one_region_via_trajectory_simulation <- function(
       get_inc_bin(subset_trajectory_samples,
         return_character = FALSE)
 
-    if(regional == "Country"){
+    if(regional_switch == "Country"){
         ## Get onset week for each simulated trajectory
         onset_week_by_sim_ind <-
             apply(binned_subset_trajectory_samples, 1, function(trajectory) {
@@ -1378,7 +1375,7 @@ get_submission_one_region_via_trajectory_simulation <- function(
     ))
 
     ## Get bin probabilities and add to region template
-    if(regional == "Country") {
+    if(regional_switch == "Country") {
         onset_week_bins <- c(as.character(seq(from = 10, to = weeks_in_first_season_year - 10, by = 1)), "none")
         onset_bin_log_probs <- log(sapply(
             onset_week_bins,
