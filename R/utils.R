@@ -45,7 +45,7 @@ create_e_matrix <- function(){
 
   seasons <- seq(2017,2017,1) 
   epi_weeks <- seq(1,52,1)
-  lags <- 1:10
+  lags <- 1:40
   
   long_format_seasons <- c()
   long_format_weeks <- c()
@@ -1301,13 +1301,13 @@ get_submission_one_region_via_trajectory_simulation <- function(
     ## for backfill.
     
   
-    #e <- read.csv("data/e")
-    # current_season <- substr(analysis_time_season,1,4)
-    # current_week <- last_analysis_time_season_week+1-analysis_time_season_week
-    #lag <- analysis_time_season_week
+    e <- read.csv("data/e")
+    current_season <- substr(analysis_time_season,1,4)
+    current_week <- last_analysis_time_season_week+1-analysis_time_season_week
+    lag <- analysis_time_season_week
     
     # then something like 
-    # e[e$lag ==lag  & e$week==current_week,prediction_target_var]
+    e[e$lag ==lag  & e$week==current_week,prediction_target_var]
     # to get a random sample from previous seasons with the same 
     # week and lag value
     
