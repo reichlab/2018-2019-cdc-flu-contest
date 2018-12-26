@@ -17,18 +17,47 @@ simulate_trajectories_sarima_params <- list(
   prediction_target_var = "weeklyrate",
   seasonal_difference = FALSE,
   transformation = "box-cox",
-  first_test_season = "2017/2018",
-  age_groups = c("18-49 yr", "5-17 yr",  "Overall",  "65+ yr","50-64 yr", "0-4 yr" )
+  first_test_season = "2018/2019",
+  age_groups = c("65+ yr")#c("18-49 yr", "5-17 yr",  "Overall",  "65+ yr","50-64 yr", "0-4 yr" )
+  
+)
+
+
+sarima_res_65 <- get_submission_via_trajectory_simulation(
+  data = data,
+  analysis_time_season = "2018/2019",
+  first_analysis_time_season_week = 10, # == week 40 of year
+  last_analysis_time_season_week = 41, # analysis for 33-week season, consistent with flu competition -- at week 41, we do prediction for a horizon of one week ahead
+  prediction_target_var = "weeklyrate",
+  incidence_bins = data.frame(
+    lower = c(0, seq(from = 0.05, to = 59.95, by = 0.1)),
+    upper = c(seq(from = 0.05, to = 59.95, by = 0.1), Inf)),
+  incidence_bin_names = as.character(seq(from = 0, to = 60, by = 0.1)),
+  n_trajectory_sims = 10000,
+  simulate_trajectories_function = sample_predictive_trajectories_arima_wrapper,
+  simulate_trajectories_params = simulate_trajectories_sarima_params,
+  all_regions = c("Entire Network"),
+  regional="Hosp")
+
+
+
+simulate_trajectories_sarima_params <- list(
+  fits_filepath = "inst/estimation/hosp-sarima/fits-seasonal-differencing",
+  prediction_target_var = "weeklyrate",
+  seasonal_difference = FALSE,
+  transformation = "box-cox",
+  first_test_season = "2018/2019",
+  age_groups = c("18-49 yr", "5-17 yr",  "Overall","50-64 yr", "0-4 yr" )
   
 )
 
 
 sarima_res <- get_submission_via_trajectory_simulation(
   data = data,
-  analysis_time_season = "2017/2018",
+  analysis_time_season = "2018/2019",
   first_analysis_time_season_week = 10, # == week 40 of year
   last_analysis_time_season_week = 41, # analysis for 33-week season, consistent with flu competition -- at week 41, we do prediction for a horizon of one week ahead
-  prediction_target_var = "unweighted_ili",
+  prediction_target_var = "weeklyrate",
   incidence_bins = data.frame(
     lower = c(0, seq(from = 0.05, to = 12.95, by = 0.1)),
     upper = c(seq(from = 0.05, to = 12.95, by = 0.1), Inf)),
@@ -41,9 +70,7 @@ sarima_res <- get_submission_via_trajectory_simulation(
 
 
 
-
-
-
+sarima_res <- rbind(sarima_res,sarima_res_65)
 
 res_file <- file.path(submissions_save_path,
                       paste0(
@@ -69,7 +96,7 @@ write.csv(sarima_res,
           file = res_file,
           row.names = FALSE)
 
-#(FluSight::verify_entry_file(res_file, challenge = "hospital"))
+(FluSight::verify_entry_file(res_file, challenge = "hospital"))
 
 ### Plots for sanity
 
