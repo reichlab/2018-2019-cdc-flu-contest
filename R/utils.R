@@ -1132,7 +1132,7 @@ get_submission_via_trajectory_simulation <- function(
   n_trajectory_sims,
   simulate_trajectories_function,
   simulate_trajectories_params,
-  all_regions=c("National", paste0("Region ", 1:10)),
+  all_regions=c( paste0("Region ", 1:10),"National"),
   regional_switch) {
   require(plyr)
   if (!regional_switch=="Hosp"){
