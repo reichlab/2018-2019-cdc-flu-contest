@@ -1,0 +1,50 @@
+---
+title: "AWHS"
+output: html_document
+---
+
+TODO:
+- Go to literature to look for metabolic risk factors
+- Pull covariates from existing research (maybe hierarchical covariates)
+- Classify subjects (binary + ordinal) using cutoffs from literature 
+- 
+
+Risk factors are based on metabolic syndromes.
+
+$$\text{Risk Factors = blood pressure, high blood sugar, excess bod fat, cholesterol}$$
+
+$$Y_i = 1 \ \text{if 3 or more risk factors}$$
+$$Y_i = 0\ \text{else}$$
+
+# Model 1 
+$$logit(Y_i) = \beta * \text{Cooking Fuel} + \beta_1 * \text{Covariates}$$
+
+$$\text{Individual Level Covariates = SES, Age, BMI, Level Of Education, Ethnicity}$$
+
+# Model 2
+$$logit(Y_{i,j}) = \beta * \text{Cooking Fuel} + \beta_1 * \text{Covariates}$$
+where $i=\text{individual}$ and $j=\text{ea}$
+
+$$\text{Cluster Level Covariates = Distance from nearest Major Road (Traffic)}$$
+
+
+
+```{r}
+library(foreign)
+data <- read.dta("/Users/gcgibson/Downloads/whsa1_wf.dta")
+
+colnames(data)
+```
+
+## Coding the Exposure
+```{r}
+wave2 <- read.dta("/Users/gcgibson/Downloads/WHSAII_23July2010.dta")
+wave2$dirty_fuel <- ifelse(wave2$h09_cooking == "kerosene" |wave2$h09_cooking == "charcoal" | wave2$h09_cooking == "coconut husk" |wave2$h09_cooking == "wood" |wave2$h09_cooking == "other" | wave2$h09_cooking == "none",1,0  )
+```
+
+## Coding the Outcome
+
+```{r}
+
+
+```
