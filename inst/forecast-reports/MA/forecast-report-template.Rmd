@@ -5,11 +5,11 @@ date: "3/28/2019"
 output: pdf_document
 ---
 
-#Intro
+# Intro
 The Reichlab produces weekly forecasts of the percentage of doctors visits that present with influenza-like-illness (ILI) at the state level based on data provided through the CDC Flusight challenge. We use historical ILI incidence to predict future ILI incidence using statistical models. 
 
-#MA Results
-What follows is the forecasted 1-4 week ahead ILI along with an 80% confidence interval around the forecasts. 
+# MA Results
+What follows is the forecasted 1-4 week ahead ILI along with 50% and 80% confidence interval around the forecasts. 
 
 ```{r,echo=FALSE, include=FALSE}
 
@@ -60,14 +60,22 @@ k_step_ahead <- c(model_csv[model_csv$Location=="Massachusetts" & model_csv$Targ
                   model_csv[model_csv$Location=="Massachusetts" & model_csv$Target == "4 wk ahead" & model_csv$Type == "Point",]$Value
                   )
 
-k_step_ahead_quantile <- c(get_ci_from_sample(model_csv[model_csv$Location=="Massachusetts" & model_csv$Target == "1 wk ahead" & model_csv$Type == "Bin",]$Value,.8),
+k_step_ahead_quantile_80 <- c(get_ci_from_sample(model_csv[model_csv$Location=="Massachusetts" & model_csv$Target == "1 wk ahead" & model_csv$Type == "Bin",]$Value,.8),
                   get_ci_from_sample(model_csv[model_csv$Location=="Massachusetts" & model_csv$Target == "2 wk ahead" & model_csv$Type == "Bin",]$Value,.8),
                   get_ci_from_sample(model_csv[model_csv$Location=="Massachusetts" & model_csv$Target == "3 wk ahead" & model_csv$Type == "Bin",]$Value,.8),
                   get_ci_from_sample(model_csv[model_csv$Location=="Massachusetts" & model_csv$Target == "4 wk ahead" & model_csv$Type == "Bin",]$Value,.8)
                   )
-upr <- k_step_ahead_quantile[seq(0,length(k_step_ahead_quantile),by=2)]
-lwr <- k_step_ahead_quantile[seq(1,length(k_step_ahead_quantile),by=2)]
+upr_80 <- k_step_ahead_quantile_80[seq(0,length(k_step_ahead_quantile_80),by=2)]
+lwr_80 <- k_step_ahead_quantile_80[seq(1,length(k_step_ahead_quantile_80),by=2)]
 
+
+k_step_ahead_quantile_50 <- c(get_ci_from_sample(model_csv[model_csv$Location=="Massachusetts" & model_csv$Target == "1 wk ahead" & model_csv$Type == "Bin",]$Value,.5),
+                  get_ci_from_sample(model_csv[model_csv$Location=="Massachusetts" & model_csv$Target == "2 wk ahead" & model_csv$Type == "Bin",]$Value,.5),
+                  get_ci_from_sample(model_csv[model_csv$Location=="Massachusetts" & model_csv$Target == "3 wk ahead" & model_csv$Type == "Bin",]$Value,.5),
+                  get_ci_from_sample(model_csv[model_csv$Location=="Massachusetts" & model_csv$Target == "4 wk ahead" & model_csv$Type == "Bin",]$Value,.5)
+                  )
+upr_50 <- k_step_ahead_quantile_50[seq(0,length(k_step_ahead_quantile_50),by=2)]
+lwr_50 <- k_step_ahead_quantile_50[seq(1,length(k_step_ahead_quantile_50),by=2)]
 
 
 
@@ -75,7 +83,9 @@ lwr <- k_step_ahead_quantile[seq(1,length(k_step_ahead_quantile),by=2)]
 
 ```
 ```{r,echo=FALSE,warning=FALSE}
-ggplot(data_ma[data_ma$season == "2018/2019",],aes(x=season_week,y=unweighted_ili)) + xlim(0,52)+ geom_line() +theme_bw() + xlab("Season Week") + ylab("ILI") + geom_vline(xintercept = tail(data$season_week,1),linetype="dashed") + geom_line(data=data.frame(y=c(tail(data_ma$unweighted_ili,1), k_step_ahead)),aes(x=(tail(data$season_week,1)):(tail(data$season_week,1)+4),y=y),col="cornflowerblue") +
-      geom_ribbon(data=data.frame(lwr=lwr,upr=upr,y= k_step_ahead),aes(x=(tail(data$season_week,1)+1):(tail(data$season_week,1)+4),ymin=lwr,ymax=upr,y=y),alpha=0.3) + ggtitle("MA ILI")
+ggplot(data_ma[data_ma$season == "2018/2019",],aes(x=season_week,y=unweighted_ili)) + geom_point() + xlim(0,52)+ geom_line() +theme_bw() + xlab("Season Week") + ylab("ILI") + geom_vline(xintercept = tail(data$season_week,1),linetype="dashed") + geom_line(data=data.frame(y=c(tail(data_ma$unweighted_ili,1), k_step_ahead)),aes(x=(tail(data$season_week,1)):(tail(data$season_week,1)+4),y=y),col="cornflowerblue") +
+  geom_point(data=data.frame(y=c(tail(data_ma$unweighted_ili,1), k_step_ahead)),aes(x=(tail(data$season_week,1)):(tail(data$season_week,1)+4),y=y),col="cornflowerblue") +
+      geom_ribbon(data=data.frame(lwr=lwr_80,upr=upr_80,y= k_step_ahead),aes(x=(tail(data$season_week,1)+1):(tail(data$season_week,1)+4),ymin=lwr,ymax=upr,y=y),alpha=0.3,fill="red") + ggtitle("MA ILI") +
+  geom_ribbon(data=data.frame(lwr=lwr_50,upr=upr_50,y= k_step_ahead),aes(x=(tail(data$season_week,1)+1):(tail(data$season_week,1)+4),ymin=lwr,ymax=upr,y=y),alpha=0.3,fill="orange")
 
 ```
