@@ -85,7 +85,13 @@ lwr_50 <- k_step_ahead_quantile_50[seq(1,length(k_step_ahead_quantile_50),by=2)]
 ```{r,echo=FALSE,warning=FALSE}
 ggplot(data_ma[data_ma$season == "2018/2019",],aes(x=season_week,y=unweighted_ili)) + geom_point() + xlim(0,52)+ geom_line() +theme_bw() + xlab("Season Week") + ylab("ILI") + geom_vline(xintercept = tail(data$season_week,1),linetype="dashed") + geom_line(data=data.frame(y=c(tail(data_ma$unweighted_ili,1), k_step_ahead)),aes(x=(tail(data$season_week,1)):(tail(data$season_week,1)+4),y=y),col="cornflowerblue") +
   geom_point(data=data.frame(y=c(tail(data_ma$unweighted_ili,1), k_step_ahead)),aes(x=(tail(data$season_week,1)):(tail(data$season_week,1)+4),y=y),col="cornflowerblue") +
-      geom_ribbon(data=data.frame(lwr=lwr_80,upr=upr_80,y= k_step_ahead),aes(x=(tail(data$season_week,1)+1):(tail(data$season_week,1)+4),ymin=lwr,ymax=upr,y=y),alpha=0.3,fill="red") + ggtitle("MA ILI") +
-  geom_ribbon(data=data.frame(lwr=lwr_50,upr=upr_50,y= k_step_ahead),aes(x=(tail(data$season_week,1)+1):(tail(data$season_week,1)+4),ymin=lwr,ymax=upr,y=y),alpha=0.3,fill="orange")
+      geom_ribbon(data=data.frame(lwr=lwr_80,upr=upr_80,y= k_step_ahead),aes(x=(tail(data$season_week,1)+1):(tail(data$season_week,1)+4),ymin=lwr,ymax=upr,y=y),alpha=0.3,fill="cornflowerblue") + ggtitle("MA ILI") +
+  geom_ribbon(data=data.frame(lwr=lwr_50,upr=upr_50,y= k_step_ahead),aes(x=(tail(data$season_week,1)+1):(tail(data$season_week,1)+4),ymin=lwr,ymax=upr,y=y),alpha=0.3,fill="cornflowerblue") +
+geom_line(data=data_ma[data_ma$season == "2017/2018",],aes(x=season_week,y=unweighted_ili),alpha=.1)+
+  geom_line(data=data_ma[data_ma$season == "2016/2017",],aes(x=season_week,y=unweighted_ili),alpha=.1)+
+  geom_line(data=data_ma[data_ma$season == "2015/2016",],aes(x=season_week,y=unweighted_ili),alpha=.1)+
+  geom_line(data=data_ma[data_ma$season == "2014/2015",],aes(x=season_week,y=unweighted_ili),alpha=.1)+
+  geom_line(data=data_ma[data_ma$season == "2013/2014",],aes(x=season_week,y=unweighted_ili),alpha=.1)+
+  geom_line(data=data_ma[data_ma$season == "2012/2013",],aes(x=season_week,y=unweighted_ili),alpha=.1)
 
 ```
