@@ -78,8 +78,16 @@ upr_50 <- k_step_ahead_quantile_50[seq(0,length(k_step_ahead_quantile_50),by=2)]
 lwr_50 <- k_step_ahead_quantile_50[seq(1,length(k_step_ahead_quantile_50),by=2)]
 
 
+l <- lapply(c(seq(31,52),seq(30)),function(x){
+  if(x >= 31){
+    return (MMWRweek2Date(2018,x))
+  } else{
+    return (MMWRweek2Date(2019,x))
+  }
+  
+})
 
-
+dates <- (d <- do.call("c", l))
 
 ```
 ```{r,echo=FALSE,warning=FALSE}
@@ -93,6 +101,6 @@ geom_line(data=data_ma[data_ma$season == "2017/2018",],aes(x=season_week,y=unwei
   geom_line(data=data_ma[data_ma$season == "2014/2015",],aes(x=season_week,y=unweighted_ili),alpha=.1)+
   geom_line(data=data_ma[data_ma$season == "2013/2014",],aes(x=season_week,y=unweighted_ili),alpha=.1)+
   geom_line(data=data_ma[data_ma$season == "2012/2013",],aes(x=season_week,y=unweighted_ili),alpha=.1)+
-  scale_x_continuous(labels= paste0("2018/2019-",unique(data_ma[data_ma$season == "2017/2018",]$season_week)),breaks=data_ma[data_ma$season == "2017/2018",]$season_week)+ theme(axis.text.x = element_text(angle = 70, hjust = 1))
+  scale_x_continuous(labels=dates,breaks=data_ma[data_ma$season == "2017/2018",]$season_week)+ theme(axis.text.x = element_text(angle = 70, hjust = 1))
 
 ```
