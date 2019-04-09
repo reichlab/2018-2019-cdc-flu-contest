@@ -92,6 +92,7 @@ geom_line(data=data_ma[data_ma$season == "2017/2018",],aes(x=season_week,y=unwei
   geom_line(data=data_ma[data_ma$season == "2015/2016",],aes(x=season_week,y=unweighted_ili),alpha=.1)+
   geom_line(data=data_ma[data_ma$season == "2014/2015",],aes(x=season_week,y=unweighted_ili),alpha=.1)+
   geom_line(data=data_ma[data_ma$season == "2013/2014",],aes(x=season_week,y=unweighted_ili),alpha=.1)+
-  geom_line(data=data_ma[data_ma$season == "2012/2013",],aes(x=season_week,y=unweighted_ili),alpha=.1)
+  geom_line(data=data_ma[data_ma$season == "2012/2013",],aes(x=season_week,y=unweighted_ili),alpha=.1)+
+  scale_x_continuous(labels= paste0("2018/2019-",unique(data_ma[data_ma$season == "2017/2018",]$season_week)),breaks=data_ma[data_ma$season == "2017/2018",]$season_week)+ theme(axis.text.x = element_text(angle = 90, hjust = 1))
 
 ```
