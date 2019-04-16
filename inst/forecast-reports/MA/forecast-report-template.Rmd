@@ -53,9 +53,10 @@ data_ma <- data[data$region == "Massachusetts",]
 current_epiweek <- tail(data$week,1)
 current_season <- tail(data$season,1)
 
-
+current_year <- as.numeric(ifelse(current_epiweek > 30, substr(current_season,1,4),substr(current_season,6,10)))
+current_date <- MMWRweek2Date(current_year,current_epiweek)
 #model_csv <- read.csv(paste0("../../submissions/state-sarima/EW",current_epiweek,"-KoT-StateILI-",ymd(Sys.Date()),".csv"))
-model_csv <- read.csv(paste0("../../submissions/state-sarima/EW",13,"-KoT-StateILI-2019-04-08",".csv"))
+model_csv <- read.csv(paste0("../../submissions/state-sarima/EW",current_epiweek,"-KoT-StateILI-2019-04-15",".csv"))
 
 
 k_step_ahead <- c(model_csv[model_csv$Location=="Massachusetts" & model_csv$Target == "1 wk ahead" & model_csv$Type == "Point",]$Value,
